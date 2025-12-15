@@ -9,9 +9,140 @@ Rock-Paper-Scissors tournament using Dictionary and List data structures.
 """
 
 from flask import Flask, jsonify, request, render_template
-import random
+import json
+import os
+import hashlib
+from datetime import datetime
 
 app = Flask(__name__)
+
+# =============================================================================
+# DATA FILE CONFIGURATION
+# =============================================================================
+DATA_FILE = 'leaderboard_data.json'
+BACKUP_FILE = 'leaderboard_data.backup.json'
+
+# =============================================================================
+# SECURE DATA PERSISTENCE FUNCTIONS
+# =============================================================================
+
+def calculate_checksum(data):
+    """Calculate SHA-256 checksum for data integrity verification."""
+    data_string = json.dumps(data, sort_keys=True)
+    return hashlib.sha256(data_string.encode()).hexdigest()
+
+
+def save_leaderboard():
+    """
+    Save the LEADERBOARD dictionary to a secure JSON file.
+    Includes checksum for data integrity and timestamp for tracking.
+    """
+    try:
+        # Create backup of existing file first
+        if os.path.exists(DATA_FILE):
+            try:
+                with open(DATA_FILE, 'r') as f:
+                    backup_data = f.read()
+                with open(BACKUP_FILE, 'w') as f:
+                    f.write(backup_data)
+            except:
+                pass  # Backup failed, continue anyway
+        
+        # Prepare data with metadata
+        save_data = {
+            "version": "1.0",
+            "last_updated": datetime.now().isoformat(),
+            "leaderboard": LEADERBOARD,
+            "checksum": calculate_checksum(LEADERBOARD)
+        }
+        
+        # Write to file with pretty formatting
+        with open(DATA_FILE, 'w') as f:
+            json.dump(save_data, f, indent=2)
+        
+        return True
+    except Exception as e:
+        print(f"Error saving leaderboard: {e}")
+        return False
+
+
+def load_leaderboard():
+    """
+    Load the LEADERBOARD dictionary from the secure JSON file.
+    Verifies data integrity using checksum.
+    """
+    global LEADERBOARD
+    
+    if not os.path.exists(DATA_FILE):
+        print("No existing leaderboard file found. Starting fresh.")
+        LEADERBOARD = {}
+        return
+    
+    try:
+        with open(DATA_FILE, 'r') as f:
+            save_data = json.load(f)
+        
+        # Verify data structure
+        if not isinstance(save_data, dict) or 'leaderboard' not in save_data:
+            raise ValueError("Invalid data structure")
+        
+        loaded_leaderboard = save_data['leaderboard']
+        
+        # Verify checksum if present
+        if 'checksum' in save_data:
+            expected_checksum = save_data['checksum']
+            actual_checksum = calculate_checksum(loaded_leaderboard)
+            
+            if expected_checksum != actual_checksum:
+                print("WARNING: Data integrity check failed! Loading from backup...")
+                return load_from_backup()
+        
+        # Validate each player entry
+        for player_name, stats in loaded_leaderboard.items():
+            if not isinstance(stats, dict):
+                raise ValueError(f"Invalid stats for player {player_name}")
+            # Ensure all required fields exist
+            required_fields = ['score', 'games_won', 'games_played', 'rounds_played']
+            for field in required_fields:
+                if field not in stats:
+                    stats[field] = 0
+        
+        LEADERBOARD = loaded_leaderboard
+        print(f"Leaderboard loaded successfully. {len(LEADERBOARD)} players found.")
+        print(f"Last updated: {save_data.get('last_updated', 'Unknown')}")
+        
+    except json.JSONDecodeError as e:
+        print(f"Error parsing leaderboard file: {e}")
+        load_from_backup()
+    except Exception as e:
+        print(f"Error loading leaderboard: {e}")
+        load_from_backup()
+
+
+def load_from_backup():
+    """Attempt to load from backup file if main file is corrupted."""
+    global LEADERBOARD
+    
+    if not os.path.exists(BACKUP_FILE):
+        print("No backup file found. Starting fresh.")
+        LEADERBOARD = {}
+        return
+    
+    try:
+        with open(BACKUP_FILE, 'r') as f:
+            save_data = json.load(f)
+        
+        if 'leaderboard' in save_data:
+            LEADERBOARD = save_data['leaderboard']
+            print(f"Loaded from backup. {len(LEADERBOARD)} players restored.")
+            # Save to main file
+            save_leaderboard()
+        else:
+            LEADERBOARD = {}
+    except Exception as e:
+        print(f"Backup load failed: {e}. Starting fresh.")
+        LEADERBOARD = {}
+
 
 # =============================================================================
 # CENTRAL DATA STORE: Dictionary (LEADERBOARD)
@@ -22,6 +153,9 @@ app = Flask(__name__)
 # Purpose: O(1) average time complexity for searching and updating
 # =============================================================================
 LEADERBOARD = {}
+
+# Load existing data on startup
+load_leaderboard()
 
 # =============================================================================
 # GAME STATE: Dictionary to track current game session
@@ -89,6 +223,9 @@ def register_player():
             "games_played": 0,    # Total games participated in
             "rounds_played": 0    # Total individual rounds played
         }
+        # Save to file after adding new player
+        save_leaderboard()
+        
         return jsonify({
             "message": f"Player '{player_name}' registered successfully",
             "player": player_name,
@@ -145,6 +282,9 @@ def start_game():
     # Increment games_played for both players
     LEADERBOARD[player1]["games_played"] += 1
     LEADERBOARD[player2]["games_played"] += 1
+    
+    # Save after starting game
+    save_leaderboard()
     
     return jsonify({
         "message": "Game started!",
@@ -233,6 +373,9 @@ def play_round():
         else:
             # Tie game - no winner retention
             GAME_STATE["previous_winner"] = None
+    
+    # Save leaderboard after each round
+    save_leaderboard()
     
     return jsonify({
         "round": GAME_STATE["current_round"],
@@ -341,6 +484,8 @@ def reset_tournament():
         "previous_winner": None,
         "game_history": []
     }
+    # Save empty leaderboard to file
+    save_leaderboard()
     return jsonify({"message": "Tournament reset successfully"}), 200
 
 
