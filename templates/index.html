@@ -1,1121 +1,496 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock-Paper-Scissors Tournament</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #fff;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            color: #e94560;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            margin-bottom: 10px;
-        }
-
-        header p {
-            color: #a0a0a0;
-            font-size: 1rem;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-
-        .panel h2 {
-            color: #e94560;
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-            border-bottom: 2px solid #e94560;
-            padding-bottom: 10px;
-        }
-
-        /* Player Setup Section */
-        .player-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .input-group label {
-            color: #a0a0a0;
-            font-size: 0.9rem;
-        }
-
-        .input-group input {
-            padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #e94560;
-        }
-
-        .input-group input:disabled {
-            background: rgba(233, 69, 96, 0.2);
-            border-color: #e94560;
-            cursor: not-allowed;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #e94560, #c73e54);
-            color: #fff;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
-        }
-
-        .btn-primary:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Game Mode Selection */
-        .mode-selection {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .mode-btn:hover {
-            border-color: #e94560;
-            background: rgba(233, 69, 96, 0.1);
-        }
-
-        .mode-btn.active {
-            border-color: #e94560;
-            background: rgba(233, 69, 96, 0.3);
-        }
-
-        .mode-btn .icon {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Game Area */
-        .game-area {
-            display: none;
-        }
-
-        .game-area.active {
-            display: block;
-        }
-
-        .round-info {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(233, 69, 96, 0.1);
-            border-radius: 10px;
-        }
-
-        .round-info h3 {
-            font-size: 1.5rem;
-            color: #e94560;
-        }
-
-        .round-info .score {
-            font-size: 2rem;
-            margin: 10px 0;
-        }
-
-        .players-vs {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .player-card {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            min-width: 120px;
-        }
-
-        .player-card h4 {
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-
-        .player-card .name {
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        .vs-text {
-            font-size: 1.5rem;
-            color: #e94560;
-            font-weight: bold;
-        }
-
-        /* Turn-based display */
-        .turn-indicator {
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-            background: rgba(46, 204, 113, 0.2);
-            border: 2px solid #2ecc71;
-            border-radius: 10px;
-            font-size: 1.3rem;
-        }
-
-        .turn-indicator.warning {
-            background: rgba(241, 196, 15, 0.2);
-            border-color: #f1c40f;
-        }
-
-        .turn-indicator .player-name {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .look-away {
-            color: #f1c40f;
-            font-size: 1rem;
-            margin-top: 10px;
-            display: block;
-        }
-
-        /* RPS Choices */
-        .choices-section {
-            margin-bottom: 20px;
-        }
-
-        .choices-section h4 {
-            margin-bottom: 10px;
-            color: #a0a0a0;
-            text-align: center;
-        }
-
-        .choices-section.hidden {
-            display: none;
-        }
-
-        .choice-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .choice-btn {
-            padding: 20px 30px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .choice-btn:hover:not(:disabled) {
-            background: rgba(233, 69, 96, 0.2);
-            border-color: #e94560;
-            transform: scale(1.1);
-        }
-
-        .choice-btn.selected {
-            background: #e94560;
-            border-color: #e94560;
-        }
-
-        .choice-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Locked choice display */
-        .locked-choice {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .locked-choice .hidden-choice {
-            font-size: 3rem;
-        }
-
-        /* Result Display */
-        .result-display {
-            text-align: center;
-            padding: 20px;
-            margin: 20px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            min-height: 100px;
-        }
-
-        .result-display.win {
-            background: rgba(46, 204, 113, 0.2);
-            border: 2px solid #2ecc71;
-        }
-
-        .result-display.lose {
-            background: rgba(231, 76, 60, 0.2);
-            border: 2px solid #e74c3c;
-        }
-
-        .result-display.tie {
-            background: rgba(241, 196, 15, 0.2);
-            border: 2px solid #f1c40f;
-        }
-
-        /* Leaderboard Styles */
-        .leaderboard-section {
-            margin-top: 30px;
-        }
-
-        .leaderboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .leaderboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .leaderboard-table {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .leaderboard-table h3 {
-            background: rgba(233, 69, 96, 0.2);
-            padding: 12px 15px;
-            font-size: 1rem;
-            color: #e94560;
-        }
-
-        .table-content {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.05);
-            color: #a0a0a0;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .rank {
-            color: #e94560;
-            font-weight: bold;
-        }
-
-        /* Game History */
-        .history-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-
-        .history-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-
-        /* Winner Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            border: 2px solid #e94560;
-            max-width: 400px;
-        }
-
-        .modal-content h2 {
-            color: #e94560;
-            font-size: 2rem;
-            margin-bottom: 15px;
-        }
-
-        .modal-content p {
-            margin-bottom: 25px;
-            font-size: 1.2rem;
-        }
-
-        .winner-name {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #2ecc71;
-            color: #fff;
-            border-radius: 8px;
-            display: none;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .reset-btn {
-            background: #e74c3c;
-            margin-top: 20px;
-        }
-
-        .reset-btn:hover {
-            background: #c0392b;
-        }
-
-        /* CPU indicator */
-        .cpu-badge {
-            background: #9b59b6;
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-            vertical-align: middle;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <header>
-            <h1>🎮 Rock-Paper-Scissors Tournament</h1>
-            <p>CSCI 210 Final Project | Student: Aric Hurkman | Professor: Gheni Abla</p>
-        </header>
-
-        <div class="main-content">
-            <!-- Left Panel: Game Area -->
-            <div class="panel">
-                <h2>🎯 Game Arena</h2>
-
-                <!-- Player Setup -->
-                <div id="player-setup" class="player-inputs">
-                    <!-- Game Mode Selection -->
-                    <div class="mode-selection">
-                        <button class="mode-btn active" id="pvp-mode" onclick="setGameMode('pvp')">
-                            <span class="icon">👥</span>
-                            Player vs Player
-                        </button>
-                        <button class="mode-btn" id="pvc-mode" onclick="setGameMode('pvc')">
-                            <span class="icon">🤖</span>
-                            Player vs CPU
-                        </button>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="player1-name">Player 1 Name:</label>
-                        <input type="text" id="player1-name" placeholder="Enter Player 1 name">
-                    </div>
-                    <div class="input-group" id="player2-input-group">
-                        <label for="player2-name">Player 2 Name:</label>
-                        <input type="text" id="player2-name" placeholder="Enter Player 2 name">
-                    </div>
-                    <button class="btn btn-primary" id="start-game-btn" disabled>Start Game</button>
-                </div>
-
-                <!-- Game Play Area -->
-                <div id="game-area" class="game-area">
-                    <div class="round-info">
-                        <h3>Round <span id="current-round">0</span> / 10</h3>
-                        <div class="score">
-                            <span id="p1-wins">0</span> - <span id="p2-wins">0</span>
-                        </div>
-                    </div>
-
-                    <div class="players-vs">
-                        <div class="player-card">
-                            <h4>Player 1</h4>
-                            <div class="name" id="p1-display">-</div>
-                        </div>
-                        <div class="vs-text">VS</div>
-                        <div class="player-card">
-                            <h4>Player 2</h4>
-                            <div class="name" id="p2-display">-</div>
-                        </div>
-                    </div>
-
-                    <!-- Turn Indicator -->
-                    <div class="turn-indicator" id="turn-indicator">
-                        <span class="player-name" id="current-player-turn">Player 1</span>'s turn to choose!
-                        <span class="look-away" id="look-away-msg">👀 Player 2, please look away!</span>
-                    </div>
-
-                    <!-- Player 1 locked choice (shown after P1 picks) -->
-                    <div class="locked-choice hidden" id="p1-locked">
-                        <h4>Player 1 has chosen:</h4>
-                        <div class="hidden-choice">❓</div>
-                    </div>
-
-                    <!-- Choice buttons (shown for current player) -->
-                    <div class="choices-section" id="choices-section">
-                        <h4 id="choices-label">Make your choice:</h4>
-                        <div class="choice-buttons" id="choice-buttons">
-                            <button class="choice-btn" data-choice="rock" onclick="makeChoice('rock')">🪨</button>
-                            <button class="choice-btn" data-choice="paper" onclick="makeChoice('paper')">📄</button>
-                            <button class="choice-btn" data-choice="scissors"
-                                onclick="makeChoice('scissors')">✂️</button>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary" id="confirm-choice-btn" style="width: 100%;" disabled>Confirm
-                        Choice</button>
-
-                    <div id="result-display" class="result-display">
-                        <p>Waiting for players to make their choices...</p>
-                    </div>
-
-                    <h4>Round History:</h4>
-                    <div id="history-list" class="history-list"></div>
-                </div>
-            </div>
-
-            <!-- Right Panel: Leaderboard -->
-            <div class="panel">
-                <h2>🏆 Tournament Leaderboard</h2>
-
-                <div class="leaderboard-grid">
-                    <!-- Sorted by Name -->
-                    <div class="leaderboard-table">
-                        <h3>📋 By Name (A-Z)</h3>
-                        <div class="table-content">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Player</th>
-                                        <th>Score</th>
-                                        <th>Wins</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leaderboard-by-name">
-                                    <tr>
-                                        <td colspan="3">No players yet</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Sorted by Score -->
-                    <div class="leaderboard-table">
-                        <h3>🥇 By Score (High-Low)</h3>
-                        <div class="table-content">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Player</th>
-                                        <th>Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leaderboard-by-score">
-                                    <tr>
-                                        <td colspan="3">No players yet</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn btn-secondary reset-btn" id="reset-btn" style="width: 100%;">
-                    🔄 Reset Tournament
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Winner Modal -->
-    <div id="winner-modal" class="modal">
-        <div class="modal-content">
-            <h2>🎉 Game Over!</h2>
-            <p id="winner-message">The winner is...</p>
-            <div class="button-group">
-                <button class="btn btn-primary" id="new-game-btn">New Game</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-
-    <script>
-        // =============================================================================
-        // Rock-Paper-Scissors Tournament - Frontend JavaScript
-        // =============================================================================
-
-        // State variables
-        let player1Choice = null;
-        let player2Choice = null;
-        let previousWinner = null;
-        let currentTurn = 1; // 1 = Player 1's turn, 2 = Player 2's turn
-        let gameMode = 'pvp'; // 'pvp' or 'pvc'
-        let player1Name = '';
-        let player2Name = '';
-        let selectedChoice = null;
-
-        // DOM Elements
-        const player1Input = document.getElementById('player1-name');
-        const player2Input = document.getElementById('player2-name');
-        const player2InputGroup = document.getElementById('player2-input-group');
-        const startGameBtn = document.getElementById('start-game-btn');
-        const playerSetup = document.getElementById('player-setup');
-        const gameArea = document.getElementById('game-area');
-        const confirmChoiceBtn = document.getElementById('confirm-choice-btn');
-        const resultDisplay = document.getElementById('result-display');
-        const winnerModal = document.getElementById('winner-modal');
-        const resetBtn = document.getElementById('reset-btn');
-        const turnIndicator = document.getElementById('turn-indicator');
-        const p1Locked = document.getElementById('p1-locked');
-        const choicesSection = document.getElementById('choices-section');
-
-        // =============================================================================
-        // Game Mode Functions
-        // =============================================================================
-
-        function setGameMode(mode) {
-            gameMode = mode;
-            document.getElementById('pvp-mode').classList.toggle('active', mode === 'pvp');
-            document.getElementById('pvc-mode').classList.toggle('active', mode === 'pvc');
-
-            if (mode === 'pvc') {
-                player2InputGroup.style.display = 'none';
-                player2Input.value = 'CPU';
-            } else {
-                player2InputGroup.style.display = 'flex';
-                player2Input.value = '';
-            }
-            validateStartButton();
-        }
-
-        // =============================================================================
-        // Event Listeners
-        // =============================================================================
-
-        // Enable start button when names are entered
-        player1Input.addEventListener('input', validateStartButton);
-        player2Input.addEventListener('input', validateStartButton);
-
-        // Start game button
-        startGameBtn.addEventListener('click', startGame);
-
-        // Confirm choice button
-        confirmChoiceBtn.addEventListener('click', confirmChoice);
-
-        // New game button in modal
-        document.getElementById('new-game-btn').addEventListener('click', setupNewGame);
-
-        // Reset tournament button
-        resetBtn.addEventListener('click', resetTournament);
-
-        // =============================================================================
-        // Functions
-        // =============================================================================
-
-        function validateStartButton() {
-            const p1Valid = player1Input.value.trim() !== '';
-            const p2Valid = gameMode === 'pvc' || player2Input.value.trim() !== '';
-            startGameBtn.disabled = !(p1Valid && p2Valid);
-        }
-
-        function makeChoice(choice) {
-            selectedChoice = choice;
-            document.querySelectorAll('.choice-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.choice === choice);
-            });
-            confirmChoiceBtn.disabled = false;
-        }
-
-        function confirmChoice() {
-            if (!selectedChoice) return;
-
-            if (currentTurn === 1) {
-                // Player 1 made their choice
-                player1Choice = selectedChoice;
-                selectedChoice = null;
-                confirmChoiceBtn.disabled = true;
-
-                // Clear selection visually
-                document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
-
-                if (gameMode === 'pvc') {
-                    // CPU makes a random choice
-                    const choices = ['rock', 'paper', 'scissors'];
-                    player2Choice = choices[Math.floor(Math.random() * choices.length)];
-
-                    // Show brief "CPU thinking" then play the round
-                    turnIndicator.innerHTML = '🤖 CPU is thinking...';
-                    setTimeout(() => {
-                        playRound();
-                    }, 1000);
-                } else {
-                    // Switch to Player 2's turn
-                    currentTurn = 2;
-                    updateTurnDisplay();
-                }
-            } else {
-                // Player 2 made their choice
-                player2Choice = selectedChoice;
-                selectedChoice = null;
-                playRound();
-            }
-        }
-
-        function updateTurnDisplay() {
-            const currentPlayerName = currentTurn === 1 ? player1Name : player2Name;
-            const otherPlayerName = currentTurn === 1 ? player2Name : player1Name;
-
-            // Rebuild the HTML structure (in case it was replaced by CPU thinking message)
-            turnIndicator.innerHTML = `
-                <span class="player-name" id="current-player-turn">${currentPlayerName}</span>'s turn to choose!
-                <span class="look-away" id="look-away-msg">👀 ${otherPlayerName}, please look away!</span>
-            `;
-
-            if (currentTurn === 2) {
-                // Show that Player 1 has locked in their choice
-                p1Locked.classList.remove('hidden');
-                turnIndicator.classList.add('warning');
-            } else {
-                p1Locked.classList.add('hidden');
-                turnIndicator.classList.remove('warning');
-            }
-
-            // Reset choice buttons
-            document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
-            confirmChoiceBtn.disabled = true;
-        }
-
-        async function startGame() {
-            player1Name = player1Input.value.trim();
-            player2Name = gameMode === 'pvc' ? 'CPU' : player2Input.value.trim();
-
-            if (player1Name.toLowerCase() === player2Name.toLowerCase()) {
-                showNotification('Players must have different names!', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/game/start', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ player1: player1Name, player2: player2Name })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Update UI
-                    const p2DisplayText = gameMode === 'pvc' ? 'CPU <span class="cpu-badge">🤖</span>' : player2Name;
-                    document.getElementById('p1-display').textContent = player1Name;
-                    document.getElementById('p2-display').innerHTML = p2DisplayText;
-                    document.getElementById('current-round').textContent = '0';
-                    document.getElementById('p1-wins').textContent = '0';
-                    document.getElementById('p2-wins').textContent = '0';
-                    document.getElementById('history-list').innerHTML = '';
-                    resultDisplay.innerHTML = '<p>Waiting for players to make their choices...</p>';
-                    resultDisplay.className = 'result-display';
-
-                    // Reset turn state
-                    currentTurn = 1;
-                    player1Choice = null;
-                    player2Choice = null;
-                    selectedChoice = null;
-
-                    // Show game area
-                    playerSetup.style.display = 'none';
-                    gameArea.classList.add('active');
-
-                    // Update turn display
-                    updateTurnDisplay();
-
-                    // Update leaderboard
-                    updateLeaderboard();
-
-                    showNotification('Game started!', 'success');
-                } else {
-                    showNotification(data.error, 'error');
-                }
-            } catch (error) {
-                showNotification('Error starting game', 'error');
-                console.error(error);
-            }
-        }
-
-        async function playRound() {
-            try {
-                const response = await fetch('/api/game/play_round', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        player1_choice: player1Choice,
-                        player2_choice: player2Choice
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Update round display
-                    document.getElementById('current-round').textContent = data.round;
-                    document.getElementById('p1-wins').textContent = data.player1_round_wins;
-                    document.getElementById('p2-wins').textContent = data.player2_round_wins;
-
-                    // Show result
-                    const choiceEmoji = { rock: '🪨', paper: '📄', scissors: '✂️' };
-                    let resultClass = '';
-                    let resultText = '';
-
-                    if (data.round_result === 'tie') {
-                        resultClass = 'tie';
-                        resultText = `It's a TIE! Both chose ${choiceEmoji[data.player1_choice]}`;
-                    } else if (data.round_result === 'player1') {
-                        resultClass = 'win';
-                        resultText = `${data.player1} wins! ${choiceEmoji[data.player1_choice]} beats ${choiceEmoji[data.player2_choice]}`;
-                    } else {
-                        resultClass = 'lose';
-                        resultText = `${data.player2} wins! ${choiceEmoji[data.player2_choice]} beats ${choiceEmoji[data.player1_choice]}`;
-                    }
-
-                    resultDisplay.className = `result-display ${resultClass}`;
-                    resultDisplay.innerHTML = `
-                        <p style="font-size: 1.5rem; margin-bottom: 10px;">${resultText}</p>
-                        <p>${player1Name}: ${choiceEmoji[data.player1_choice]} vs ${player2Name}: ${choiceEmoji[data.player2_choice]}</p>
-                    `;
-
-                    // Add to history
-                    addToHistory(data);
-
-                    // Reset for next round
-                    player1Choice = null;
-                    player2Choice = null;
-                    selectedChoice = null;
-                    currentTurn = 1;
-
-                    // Update leaderboard
-                    updateLeaderboard();
-
-                    // Check if game is complete
-                    if (data.game_complete) {
-                        previousWinner = data.previous_winner;
-                        setTimeout(() => showWinnerModal(data), 1500);
-                    } else {
-                        // Prepare for next round after a delay
-                        setTimeout(() => {
-                            updateTurnDisplay();
-                            resultDisplay.innerHTML = '<p>Waiting for players to make their choices...</p>';
-                            resultDisplay.className = 'result-display';
-                        }, 2500);
-                    }
-                } else {
-                    showNotification(data.error, 'error');
-                }
-            } catch (error) {
-                showNotification('Error playing round', 'error');
-                console.error(error);
-            }
-        }
-
-        function addToHistory(data) {
-            const historyList = document.getElementById('history-list');
-            const choiceEmoji = { rock: '🪨', paper: '📄', scissors: '✂️' };
-            const winner = data.round_winner || 'Tie';
-
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <strong>Round ${data.round}:</strong> 
-                ${data.player1} ${choiceEmoji[data.player1_choice]} vs 
-                ${data.player2} ${choiceEmoji[data.player2_choice]} 
-                → <strong>${winner}</strong>
-            `;
-            historyList.insertBefore(historyItem, historyList.firstChild);
-        }
-
-        function showWinnerModal(data) {
-            const message = document.getElementById('winner-message');
-            if (data.game_winner) {
-                message.innerHTML = `
-                    <span class="winner-name">${data.game_winner}</span> wins the game!<br>
-                    Final Score: ${data.player1_round_wins} - ${data.player2_round_wins}
-                `;
-            } else {
-                message.innerHTML = `
-                    It's a TIE!<br>
-                    Final Score: ${data.player1_round_wins} - ${data.player2_round_wins}
-                `;
-            }
-            winnerModal.classList.add('active');
-        }
-
-        function setupNewGame() {
-            winnerModal.classList.remove('active');
-            gameArea.classList.remove('active');
-            playerSetup.style.display = 'flex';
-
-            // Winner retention: if there was a winner, they become Player 1
-            if (previousWinner && previousWinner !== 'CPU') {
-                player1Input.value = previousWinner;
-                player1Input.disabled = true;
-                player2Input.value = '';
-
-                // If CPU won in PvC mode, switch to PvP for next game
-                if (gameMode === 'pvc') {
-                    setGameMode('pvp');
-                }
-
-                player2Input.focus();
-                showNotification(`${previousWinner} retained as Player 1!`, 'success');
-            } else if (previousWinner === 'CPU') {
-                // CPU won - player must enter their name again
-                player1Input.value = '';
-                player1Input.disabled = false;
-                showNotification('CPU won! Enter a new challenger!', 'success');
-            } else {
-                player1Input.value = '';
-                player1Input.disabled = false;
-                player2Input.value = '';
-            }
-
-            // Reset state
-            p1Locked.classList.add('hidden');
-
-            validateStartButton();
-        }
-
-        async function resetTournament() {
-            if (!confirm('Are you sure you want to reset the entire tournament? All player data will be lost.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/reset', { method: 'POST' });
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Reset UI
-                    previousWinner = null;
-                    player1Input.value = '';
-                    player1Input.disabled = false;
-                    player2Input.value = '';
-                    gameArea.classList.remove('active');
-                    playerSetup.style.display = 'flex';
-                    winnerModal.classList.remove('active');
-                    p1Locked.classList.add('hidden');
-                    setGameMode('pvp');
-                    validateStartButton();
-                    updateLeaderboard();
-                    showNotification('Tournament reset!', 'success');
-                }
-            } catch (error) {
-                showNotification('Error resetting tournament', 'error');
-            }
-        }
-
-        async function updateLeaderboard() {
-            try {
-                const response = await fetch('/api/leaderboard');
-                const data = await response.json();
-
-                // Update "By Name" table
-                const byNameBody = document.getElementById('leaderboard-by-name');
-                if (data.sorted_by_name.length === 0) {
-                    byNameBody.innerHTML = '<tr><td colspan="3">No players yet</td></tr>';
-                } else {
-                    byNameBody.innerHTML = data.sorted_by_name.map(player => `
-                        <tr>
-                            <td>${player.name}${player.name === 'CPU' ? ' <span class="cpu-badge">🤖</span>' : ''}</td>
-                            <td>${player.score}</td>
-                            <td>${player.games_won}</td>
-                        </tr>
-                    `).join('');
-                }
-
-                // Update "By Score" table
-                const byScoreBody = document.getElementById('leaderboard-by-score');
-                if (data.sorted_by_score.length === 0) {
-                    byScoreBody.innerHTML = '<tr><td colspan="3">No players yet</td></tr>';
-                } else {
-                    byScoreBody.innerHTML = data.sorted_by_score.map((player, index) => `
-                        <tr>
-                            <td class="rank">${index + 1}</td>
-                            <td>${player.name}${player.name === 'CPU' ? ' <span class="cpu-badge">🤖</span>' : ''}</td>
-                            <td>${player.score}</td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error updating leaderboard:', error);
-            }
-        }
-
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.background = type === 'error' ? '#e74c3c' : '#2ecc71';
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // =============================================================================
-        // Initialize
-        // =============================================================================
-        updateLeaderboard();
-    </script>
-</body>
-
-</html>
+"""
+Rock-Paper-Scissors Tournament Leaderboard
+CSCI 210 Final Project
+Student: Aric Hurkman
+Professor: Gheni Abla
+
+A Flask-based web application that manages a persistent, multi-player
+Rock-Paper-Scissors tournament using Dictionary and List data structures.
+"""
+
+from flask import Flask, jsonify, request, render_template
+import json
+import os
+import hashlib
+from datetime import datetime
+
+app = Flask(__name__)
+
+# =============================================================================
+# DATA FILE CONFIGURATION
+# =============================================================================
+DATA_FILE = 'leaderboard_data.json'
+BACKUP_FILE = 'leaderboard_data.backup.json'
+
+# =============================================================================
+# SECURE DATA PERSISTENCE FUNCTIONS
+# =============================================================================
+
+def calculate_checksum(data):
+"""Calculate SHA-256 checksum for data integrity verification."""
+data_string = json.dumps(data, sort_keys=True)
+return hashlib.sha256(data_string.encode()).hexdigest()
+
+
+def save_leaderboard():
+"""
+Save the LEADERBOARD dictionary to a secure JSON file.
+Includes checksum for data integrity and timestamp for tracking.
+"""
+try:
+# Create backup of existing file first
+if os.path.exists(DATA_FILE):
+try:
+with open(DATA_FILE, 'r') as f:
+backup_data = f.read()
+with open(BACKUP_FILE, 'w') as f:
+f.write(backup_data)
+except:
+pass # Backup failed, continue anyway
+
+# Prepare data with metadata
+save_data = {
+"version": "1.0",
+"last_updated": datetime.now().isoformat(),
+"leaderboard": LEADERBOARD,
+"checksum": calculate_checksum(LEADERBOARD)
+}
+
+# Write to file with pretty formatting
+with open(DATA_FILE, 'w') as f:
+json.dump(save_data, f, indent=2)
+
+return True
+except Exception as e:
+print(f"Error saving leaderboard: {e}")
+return False
+
+
+def load_leaderboard():
+"""
+Load the LEADERBOARD dictionary from the secure JSON file.
+Verifies data integrity using checksum.
+"""
+global LEADERBOARD
+
+if not os.path.exists(DATA_FILE):
+print("No existing leaderboard file found. Starting fresh.")
+LEADERBOARD = {}
+return
+
+try:
+with open(DATA_FILE, 'r') as f:
+save_data = json.load(f)
+
+# Verify data structure
+if not isinstance(save_data, dict) or 'leaderboard' not in save_data:
+raise ValueError("Invalid data structure")
+
+loaded_leaderboard = save_data['leaderboard']
+
+# Verify checksum if present
+if 'checksum' in save_data:
+expected_checksum = save_data['checksum']
+actual_checksum = calculate_checksum(loaded_leaderboard)
+
+if expected_checksum != actual_checksum:
+print("WARNING: Data integrity check failed! Loading from backup...")
+return load_from_backup()
+
+# Validate each player entry
+for player_name, stats in loaded_leaderboard.items():
+if not isinstance(stats, dict):
+raise ValueError(f"Invalid stats for player {player_name}")
+# Ensure all required fields exist
+required_fields = ['score', 'games_won', 'games_played', 'rounds_played']
+for field in required_fields:
+if field not in stats:
+stats[field] = 0
+
+LEADERBOARD = loaded_leaderboard
+print(f"Leaderboard loaded successfully. {len(LEADERBOARD)} players found.")
+print(f"Last updated: {save_data.get('last_updated', 'Unknown')}")
+
+except json.JSONDecodeError as e:
+print(f"Error parsing leaderboard file: {e}")
+load_from_backup()
+except Exception as e:
+print(f"Error loading leaderboard: {e}")
+load_from_backup()
+
+
+def load_from_backup():
+"""Attempt to load from backup file if main file is corrupted."""
+global LEADERBOARD
+
+if not os.path.exists(BACKUP_FILE):
+print("No backup file found. Starting fresh.")
+LEADERBOARD = {}
+return
+
+try:
+with open(BACKUP_FILE, 'r') as f:
+save_data = json.load(f)
+
+if 'leaderboard' in save_data:
+LEADERBOARD = save_data['leaderboard']
+print(f"Loaded from backup. {len(LEADERBOARD)} players restored.")
+# Save to main file
+save_leaderboard()
+else:
+LEADERBOARD = {}
+except Exception as e:
+print(f"Backup load failed: {e}. Starting fresh.")
+LEADERBOARD = {}
+
+
+# =============================================================================
+# CENTRAL DATA STORE: Dictionary (LEADERBOARD)
+# =============================================================================
+# Structure: Global Python Dictionary serving as single source of truth
+# Key: Unique player name (String)
+# Value: Nested dictionary with cumulative statistics
+# Purpose: O(1) average time complexity for searching and updating
+# =============================================================================
+LEADERBOARD = {}
+
+# Load existing data on startup
+load_leaderboard()
+
+# =============================================================================
+# GAME STATE: Dictionary to track current game session
+# =============================================================================
+GAME_STATE = {
+"player1": None,
+"player2": None,
+"player1_round_wins": 0,
+"player2_round_wins": 0,
+"current_round": 0,
+"game_active": False,
+"previous_winner": None, # For winner retention feature
+"game_history": [] # Track round-by-round results
+}
+
+# Rock-Paper-Scissors game rules
+RPS_RULES = {
+"rock": {"beats": "scissors", "loses_to": "paper"},
+"paper": {"beats": "rock", "loses_to": "scissors"},
+"scissors": {"beats": "paper", "loses_to": "rock"}
+}
+
+
+def determine_round_winner(choice1, choice2):
+"""
+Determine the winner of a single round.
+Returns: 'player1', 'player2', or 'tie'
+"""
+if choice1 == choice2:
+return "tie"
+elif RPS_RULES[choice1]["beats"] == choice2:
+return "player1"
+else:
+return "player2"
+
+
+# =============================================================================
+# ROUTE: Serve the main HTML page
+# =============================================================================
+@app.route('/')
+def index():
+return render_template('index.html')
+
+
+# =============================================================================
+# API ENDPOINT: Register a new player
+# POST /api/player/register
+# Creates a new player resource if they don't exist
+# =============================================================================
+@app.route('/api/player/register', methods=['POST'])
+def register_player():
+data = request.get_json()
+player_name = data.get('name', '').strip()
+
+if not player_name:
+return jsonify({"error": "Player name is required"}), 400
+
+# Check if player already exists in LEADERBOARD dictionary
+if player_name not in LEADERBOARD:
+# Add new player to the LEADERBOARD dictionary
+# Value is a nested dictionary containing cumulative statistics
+LEADERBOARD[player_name] = {
+"score": 0, # Total rounds won across all games
+"games_won": 0, # Total 10-round games won
+"games_played": 0, # Total games participated in
+"rounds_played": 0 # Total individual rounds played
+}
+# Save to file after adding new player
+save_leaderboard()
+
+return jsonify({
+"message": f"Player '{player_name}' registered successfully",
+"player": player_name,
+"stats": LEADERBOARD[player_name],
+"is_new": True
+}), 201
+else:
+return jsonify({
+"message": f"Player '{player_name}' already exists",
+"player": player_name,
+"stats": LEADERBOARD[player_name],
+"is_new": False
+}), 200
+
+
+# =============================================================================
+# API ENDPOINT: Start a new game
+# POST /api/game/start
+# Initializes state for a new 10-round game between current players
+# =============================================================================
+@app.route('/api/game/start', methods=['POST'])
+def start_game():
+data = request.get_json()
+player1 = data.get('player1', '').strip()
+player2 = data.get('player2', '').strip()
+
+# Validate both players are provided
+if not player1 or not player2:
+return jsonify({"error": "Both player names are required"}), 400
+
+# Validate players are different
+if player1.lower() == player2.lower():
+return jsonify({"error": "Players must have different names"}), 400
+
+# Register players if they don't exist (using Dictionary O(1) lookup)
+for player in [player1, player2]:
+if player not in LEADERBOARD:
+LEADERBOARD[player] = {
+"score": 0,
+"games_won": 0,
+"games_played": 0,
+"rounds_played": 0
+}
+
+# Initialize game state for new 10-round game
+GAME_STATE["player1"] = player1
+GAME_STATE["player2"] = player2
+GAME_STATE["player1_round_wins"] = 0
+GAME_STATE["player2_round_wins"] = 0
+GAME_STATE["current_round"] = 0
+GAME_STATE["game_active"] = True
+GAME_STATE["game_history"] = []
+
+# Increment games_played for both players
+LEADERBOARD[player1]["games_played"] += 1
+LEADERBOARD[player2]["games_played"] += 1
+
+# Save after starting game
+save_leaderboard()
+
+return jsonify({
+"message": "Game started!",
+"player1": player1,
+"player2": player2,
+"total_rounds": 10,
+"current_round": 0,
+"player1_stats": LEADERBOARD[player1],
+"player2_stats": LEADERBOARD[player2]
+}), 200
+
+
+# =============================================================================
+# API ENDPOINT: Play one round
+# POST /api/game/play_round
+# Executes one round of RPS, updates scores in Dictionary, returns result
+# =============================================================================
+@app.route('/api/game/play_round', methods=['POST'])
+def play_round():
+if not GAME_STATE["game_active"]:
+return jsonify({"error": "No active game. Please start a new game."}), 400
+
+if GAME_STATE["current_round"] >= 10:
+return jsonify({"error": "Game is complete. Please start a new game."}), 400
+
+data = request.get_json()
+player1_choice = data.get('player1_choice', '').lower().strip()
+player2_choice = data.get('player2_choice', '').lower().strip()
+
+# Validate choices
+valid_choices = ['rock', 'paper', 'scissors']
+if player1_choice not in valid_choices or player2_choice not in valid_choices:
+return jsonify({"error": "Invalid choice. Must be rock, paper, or scissors"}), 400
+
+# Increment round counter
+GAME_STATE["current_round"] += 1
+
+# Determine round winner
+round_result = determine_round_winner(player1_choice, player2_choice)
+
+player1 = GAME_STATE["player1"]
+player2 = GAME_STATE["player2"]
+
+# Update rounds played for both players
+LEADERBOARD[player1]["rounds_played"] += 1
+LEADERBOARD[player2]["rounds_played"] += 1
+
+# Update scores based on round result
+round_winner_name = None
+if round_result == "player1":
+GAME_STATE["player1_round_wins"] += 1
+# Update cumulative score in LEADERBOARD dictionary
+LEADERBOARD[player1]["score"] += 1
+round_winner_name = player1
+elif round_result == "player2":
+GAME_STATE["player2_round_wins"] += 1
+# Update cumulative score in LEADERBOARD dictionary
+LEADERBOARD[player2]["score"] += 1
+round_winner_name = player2
+
+# Record round in history
+round_record = {
+"round": GAME_STATE["current_round"],
+"player1_choice": player1_choice,
+"player2_choice": player2_choice,
+"winner": round_winner_name if round_winner_name else "Tie"
+}
+GAME_STATE["game_history"].append(round_record)
+
+# Check if game is complete (10 rounds played)
+game_complete = GAME_STATE["current_round"] >= 10
+game_winner = None
+
+if game_complete:
+GAME_STATE["game_active"] = False
+
+# Determine game winner
+if GAME_STATE["player1_round_wins"] > GAME_STATE["player2_round_wins"]:
+game_winner = player1
+LEADERBOARD[player1]["games_won"] += 1
+GAME_STATE["previous_winner"] = player1
+elif GAME_STATE["player2_round_wins"] > GAME_STATE["player1_round_wins"]:
+game_winner = player2
+LEADERBOARD[player2]["games_won"] += 1
+GAME_STATE["previous_winner"] = player2
+else:
+# Tie game - no winner retention
+GAME_STATE["previous_winner"] = None
+
+# Save leaderboard after each round
+save_leaderboard()
+
+return jsonify({
+"round": GAME_STATE["current_round"],
+"player1": player1,
+"player2": player2,
+"player1_choice": player1_choice,
+"player2_choice": player2_choice,
+"round_winner": round_winner_name,
+"round_result": round_result,
+"player1_round_wins": GAME_STATE["player1_round_wins"],
+"player2_round_wins": GAME_STATE["player2_round_wins"],
+"game_complete": game_complete,
+"game_winner": game_winner,
+"previous_winner": GAME_STATE["previous_winner"],
+"player1_total_score": LEADERBOARD[player1]["score"],
+"player2_total_score": LEADERBOARD[player2]["score"]
+}), 200
+
+
+# =============================================================================
+# API ENDPOINT: Get Leaderboard
+# GET /api/leaderboard
+# Retrieves the complete leaderboard with two sorted views
+# Demonstrates: Dictionary to List conversion and Sorting algorithms
+# =============================================================================
+@app.route('/api/leaderboard', methods=['GET'])
+def get_leaderboard():
+"""
+LEADERBOARD PRESENTATION: Lists & Sorting
+
+Step 1: Convert Dictionary to List of Dictionaries
+Step 2: Apply sorting with lambda keys for two views
+"""
+
+# Step 1: Convert LEADERBOARD Dictionary to List of Dictionaries
+# This transformation is required for sorting operations
+players_list = []
+for player_name, stats in LEADERBOARD.items():
+player_dict = {
+"name": player_name,
+"score": stats["score"],
+"games_won": stats["games_won"],
+"games_played": stats["games_played"],
+"rounds_played": stats["rounds_played"]
+}
+players_list.append(player_dict)
+
+# Step 2: Create two sorted views using Python's sorted() with lambda keys
+
+# View 1: Sorted Alphabetically by Player Name (case-insensitive)
+sorted_by_name = sorted(players_list, key=lambda x: x["name"].lower())
+
+# View 2: Sorted Numerically (Descending) by Accumulative Score
+sorted_by_score = sorted(players_list, key=lambda x: x["score"], reverse=True)
+
+return jsonify({
+"total_players": len(players_list),
+"sorted_by_name": sorted_by_name,
+"sorted_by_score": sorted_by_score,
+"game_state": {
+"active": GAME_STATE["game_active"],
+"current_round": GAME_STATE["current_round"],
+"player1": GAME_STATE["player1"],
+"player2": GAME_STATE["player2"],
+"player1_round_wins": GAME_STATE["player1_round_wins"],
+"player2_round_wins": GAME_STATE["player2_round_wins"],
+"previous_winner": GAME_STATE["previous_winner"]
+}
+}), 200
+
+
+# =============================================================================
+# API ENDPOINT: Get current game state
+# GET /api/game/state
+# Helper endpoint to retrieve current game status
+# =============================================================================
+@app.route('/api/game/state', methods=['GET'])
+def get_game_state():
+return jsonify({
+"game_active": GAME_STATE["game_active"],
+"player1": GAME_STATE["player1"],
+"player2": GAME_STATE["player2"],
+"current_round": GAME_STATE["current_round"],
+"player1_round_wins": GAME_STATE["player1_round_wins"],
+"player2_round_wins": GAME_STATE["player2_round_wins"],
+"previous_winner": GAME_STATE["previous_winner"],
+"game_history": GAME_STATE["game_history"]
+}), 200
+
+
+# =============================================================================
+# API ENDPOINT: Reset tournament (for testing purposes)
+# POST /api/reset
+# =============================================================================
+@app.route('/api/reset', methods=['POST'])
+def reset_tournament():
+global LEADERBOARD, GAME_STATE
+LEADERBOARD = {}
+GAME_STATE = {
+"player1": None,
+"player2": None,
+"player1_round_wins": 0,
+"player2_round_wins": 0,
+"current_round": 0,
+"game_active": False,
+"previous_winner": None,
+"game_history": []
+}
+# Save empty leaderboard to file
+save_leaderboard()
+return jsonify({"message": "Tournament reset successfully"}), 200
+
+
+# =============================================================================
+# Run the Flask application
+# =============================================================================
+if __name__ == '__main__':
+app.run(debug=True, port=5000)
