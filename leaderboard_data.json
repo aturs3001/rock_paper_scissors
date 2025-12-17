@@ -1,19 +1,5 @@
 {
-  "version": "1.0",
-  "last_updated": "2025-12-15T09:33:45.943106",
-  "leaderboard": {
-    "Aric": {
-      "score": 5,
-      "games_won": 1,
-      "games_played": 1,
-      "rounds_played": 10
-    },
-    "CPU": {
-      "score": 1,
-      "games_won": 0,
-      "games_played": 1,
-      "rounds_played": 10
-    }
-  },
-  "checksum": "c33cd676468af6c4cd0acc873df9f54793efecc0f474dcdb244391e1f43cfb60"
+  "leaderboard": {},
+  "checksum": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "saved_at": "2025-12-16T19:34:35.659542"
 }

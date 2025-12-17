@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,7 @@
         header h1 {
             font-size: 2.5rem;
             color: #e94560;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             margin-bottom: 10px;
         }
 
@@ -517,6 +518,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -627,7 +629,8 @@
 
                 <div class="leaderboard-section">
                     <div class="leaderboard-tabs">
-                        <button class="tab-btn active" id="tab-score" onclick="showLeaderboard('score')">By Score</button>
+                        <button class="tab-btn active" id="tab-score" onclick="showLeaderboard('score')">By
+                            Score</button>
                         <button class="tab-btn" id="tab-name" onclick="showLeaderboard('name')">By Name</button>
                     </div>
 
@@ -687,14 +690,14 @@
             gameMode = mode;
             document.getElementById('pvp-mode').classList.toggle('active', mode === 'pvp');
             document.getElementById('pvc-mode').classList.toggle('active', mode === 'pvc');
-            
+
             if (mode === 'pvc') {
                 player2InputGroup.classList.add('hidden');
                 player2Input.value = '';
             } else {
                 player2InputGroup.classList.remove('hidden');
             }
-            
+
             validateInputs();
         }
 
@@ -719,23 +722,23 @@
                 player1Choice = selectedChoice;
                 selectedChoice = null;
                 confirmChoiceBtn.disabled = true;
-                
+
                 document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
-                
+
                 if (gameMode === 'pvc') {
                     turnIndicator.innerHTML = '🤖 CPU is analyzing your patterns...';
-                    
+
                     try {
                         const response = await fetch('/api/cpu/strategic_choice', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ opponent_name: player1Name })
                         });
-                        
+
                         const data = await response.json();
                         player2Choice = data.choice;
                         lastAiInfo = data;
-                        
+
                         setTimeout(() => {
                             playRound();
                         }, 1000);
@@ -761,12 +764,12 @@
         function updateTurnDisplay() {
             const currentPlayerName = currentTurn === 1 ? player1Name : player2Name;
             const otherPlayerName = currentTurn === 1 ? player2Name : player1Name;
-            
+
             turnIndicator.innerHTML = `
                 <span class="player-name" id="current-player-turn">${currentPlayerName}</span>'s turn to choose!
                 <span class="look-away" id="look-away-msg">👀 ${otherPlayerName}, please look away!</span>
             `;
-            
+
             if (currentTurn === 2) {
                 p1Locked.classList.remove('hidden');
                 turnIndicator.classList.add('warning');
@@ -774,7 +777,7 @@
                 p1Locked.classList.add('hidden');
                 turnIndicator.classList.remove('warning');
             }
-            
+
             document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
             confirmChoiceBtn.disabled = true;
         }
@@ -804,16 +807,16 @@
 
                 setupArea.style.display = 'none';
                 gameArea.classList.add('active');
-                
+
                 document.getElementById('p1-display').textContent = player1Name;
                 document.getElementById('p2-display').textContent = player2Name + (gameMode === 'pvc' ? ' 🤖' : '');
                 document.getElementById('current-round').textContent = '1';
                 document.getElementById('p1-wins').textContent = '0';
                 document.getElementById('p2-wins').textContent = '0';
-                
+
                 currentTurn = 1;
                 updateTurnDisplay();
-                
+
                 loadLeaderboard();
 
             } catch (error) {
@@ -834,13 +837,13 @@
                 });
 
                 const data = await response.json();
-                
+
                 showRoundResult(data);
-                
+
                 document.getElementById('current-round').textContent = data.game_state.current_round;
                 document.getElementById('p1-wins').textContent = data.game_state.player1_round_wins;
                 document.getElementById('p2-wins').textContent = data.game_state.player2_round_wins;
-                
+
                 if (data.game_over) {
                     showGameOver(data);
                 } else {
@@ -853,7 +856,7 @@
                         document.getElementById('ai-info').classList.add('hidden');
                     }, 2500);
                 }
-                
+
                 loadLeaderboard();
 
             } catch (error) {
@@ -866,12 +869,12 @@
             const resultText = document.getElementById('result-text');
             const aiInfo = document.getElementById('ai-info');
             const aiDetail = document.getElementById('ai-detail');
-            
+
             document.getElementById('result-p1-choice').textContent = choiceIcons[data.round.player1_choice];
             document.getElementById('result-p2-choice').textContent = choiceIcons[data.round.player2_choice];
             document.getElementById('result-p1-name').textContent = player1Name;
             document.getElementById('result-p2-name').textContent = player2Name;
-            
+
             if (data.round.result === 'player1') {
                 resultText.textContent = `${player1Name} wins this round!`;
                 resultText.className = 'result-text win';
@@ -882,13 +885,13 @@
                 resultText.textContent = "It's a tie!";
                 resultText.className = 'result-text tie';
             }
-            
+
             if (gameMode === 'pvc' && lastAiInfo) {
                 aiInfo.classList.remove('hidden');
                 let strategyLabel = '';
                 let strategyEmoji = '';
-                
-                switch(lastAiInfo.strategy_used) {
+
+                switch (lastAiInfo.strategy_used) {
                     case 'pattern':
                         strategyEmoji = '🧠';
                         strategyLabel = 'Pattern Recognition';
@@ -917,17 +920,17 @@
                         strategyEmoji = '🎲';
                         strategyLabel = 'Random';
                 }
-                
+
                 let confidenceText = lastAiInfo.confidence ? ` | Confidence: ${lastAiInfo.confidence}%` : '';
                 aiDetail.textContent = `${strategyEmoji} Strategy: ${strategyLabel} | ${lastAiInfo.analysis}${confidenceText}`;
             } else {
                 aiInfo.classList.add('hidden');
             }
-            
+
             p1Locked.classList.add('hidden');
             turnIndicator.classList.remove('warning');
             turnIndicator.innerHTML = '⏳ Results...';
-            
+
             resultDisplay.classList.add('active');
         }
 
@@ -935,15 +938,15 @@
             const modal = document.getElementById('game-over-modal');
             const winnerText = document.getElementById('modal-winner');
             const scoreText = document.getElementById('modal-score');
-            
+
             if (data.game_winner) {
                 winnerText.textContent = `🏆 ${data.game_winner} Wins!`;
             } else {
                 winnerText.textContent = "It's a Draw!";
             }
-            
+
             scoreText.textContent = `Final Score: ${data.game_state.player1_round_wins} - ${data.game_state.player2_round_wins}`;
-            
+
             modal.classList.add('active');
         }
 
@@ -953,7 +956,7 @@
             setupArea.style.display = 'block';
             document.getElementById('result-display').classList.remove('active');
             document.getElementById('ai-info').classList.add('hidden');
-            
+
             fetch('/api/game/state')
                 .then(res => res.json())
                 .then(data => {
@@ -973,7 +976,7 @@
             try {
                 const response = await fetch('/api/leaderboard');
                 const data = await response.json();
-                
+
                 window.leaderboardData = data;
                 showLeaderboard('score');
             } catch (error) {
@@ -984,18 +987,18 @@
         function showLeaderboard(sortBy) {
             document.getElementById('tab-score').classList.toggle('active', sortBy === 'score');
             document.getElementById('tab-name').classList.toggle('active', sortBy === 'name');
-            
+
             const data = window.leaderboardData;
             if (!data) return;
-            
+
             const players = sortBy === 'score' ? data.by_score : data.by_name;
             const listEl = document.getElementById('leaderboard-list');
-            
+
             if (players.length === 0) {
                 listEl.innerHTML = '<p style="color: #a0a0a0; text-align: center;">No players yet. Start a game!</p>';
                 return;
             }
-            
+
             listEl.innerHTML = players.map((player, index) => `
                 <div class="leaderboard-item">
                     <span class="rank">${sortBy === 'score' ? index + 1 : '-'}</span>
@@ -1017,22 +1020,22 @@
             if (!confirm('Are you sure you want to reset the entire tournament? This will delete all player data.')) {
                 return;
             }
-            
+
             try {
                 await fetch('/api/reset', { method: 'POST' });
-                
+
                 gameArea.classList.remove('active');
                 setupArea.style.display = 'block';
                 document.getElementById('game-over-modal').classList.remove('active');
                 document.getElementById('result-display').classList.remove('active');
                 document.getElementById('ai-info').classList.add('hidden');
-                
+
                 player1Input.value = '';
                 player1Input.disabled = false;
                 player2Input.value = '';
-                
+
                 loadLeaderboard();
-                
+
             } catch (error) {
                 console.error('Error resetting tournament:', error);
             }
@@ -1042,4 +1045,5 @@
         loadLeaderboard();
     </script>
 </body>
+
 </html>

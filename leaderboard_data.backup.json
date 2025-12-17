@@ -1,19 +1,106 @@
 {
-  "version": "1.0",
-  "last_updated": "2025-12-15T09:33:39.378897",
   "leaderboard": {
     "Aric": {
-      "score": 5,
-      "games_won": 0,
-      "games_played": 1,
-      "rounds_played": 9
+      "score": 8,
+      "games_won": 1,
+      "games_played": 2,
+      "rounds_played": 10,
+      "choice_history": {
+        "rock": 3,
+        "paper": 5,
+        "scissors": 2
+      },
+      "move_sequence": [
+        "rock",
+        "paper",
+        "scissors",
+        "paper",
+        "paper",
+        "paper",
+        "rock",
+        "rock",
+        "scissors",
+        "paper"
+      ],
+      "pattern_history": {
+        "('rock', 'paper')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('paper', 'scissors')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('scissors', 'paper')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'paper')": {
+          "rock": 1,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('rock', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        }
+      }
     },
     "CPU": {
-      "score": 0,
-      "games_won": 0,
-      "games_played": 1,
-      "rounds_played": 9
+      "score": 6,
+      "games_won": 1,
+      "games_played": 2,
+      "rounds_played": 10,
+      "choice_history": {
+        "rock": 0,
+        "paper": 3,
+        "scissors": 7
+      },
+      "move_sequence": [
+        "paper",
+        "scissors",
+        "paper",
+        "scissors",
+        "paper",
+        "scissors",
+        "scissors",
+        "scissors",
+        "scissors",
+        "scissors"
+      ],
+      "pattern_history": {
+        "('paper', 'scissors')": {
+          "rock": 0,
+          "paper": 2,
+          "scissors": 1
+        },
+        "('scissors', 'paper')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 2
+        },
+        "('scissors', 'scissors')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 3
+        }
+      }
     }
   },
-  "checksum": "5f40da5c537e564cde60887e7ea24db2d5e5c12d91ae5737b5efbcc432c5a51f"
+  "checksum": "6b27677b1949de3f0f3477cb3e3b898381dde46b77f379bf6ece1379d1e42b4d",
+  "saved_at": "2025-12-16T19:34:22.664133"
 }
