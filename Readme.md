@@ -52,13 +52,19 @@ A Flask-based web application for managing a persistent, multi-player Rock-Paper
 
 **Demo Video**: [Watch on YouTube](#) _(Add your video link here)_
 
-**Screenshots**:
+### Screenshots
 
-_Game Interface_
-![Game Interface](screenshots/game-interface.png)
+**Main Interface - Game Setup**
 
-_Leaderboard View_
-![Leaderboard](screenshots/leaderboard.png)
+![Main Interface](screenshots/main-interface.png)
+
+The initial interface showing game mode selection (Player vs Player and Player vs CPU), player name input, and the dual-sorted leaderboard display.
+
+**Active Game - Turn-Based Play**
+
+![Game in Progress](screenshots/game-in-progress.png)
+
+The game interface during an active match, showing the turn indicator, privacy mechanics ("CPU, please look away!"), choice buttons (Rock, Paper, Scissors), and real-time score tracking.
 
 ## 🚀 Installation
 

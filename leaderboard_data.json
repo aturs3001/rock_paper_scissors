@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "last_updated": "2025-12-16T19:51:57.868352",
+  "last_updated": "2025-12-16T20:12:11.327778",
   "leaderboard": {
     "cpu-00000000-0000-0000-0000-000000000000": {
       "id": "cpu-00000000-0000-0000-0000-000000000000",
@@ -73,7 +73,23 @@
           "scissors": 0
         }
       }
+    },
+    "f6732975-903f-40b3-8553-6ee02fc3364c": {
+      "id": "f6732975-903f-40b3-8553-6ee02fc3364c",
+      "name": "Aric",
+      "score": 0,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-16T20:12:11.313576",
+      "choice_history": {
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0
+      },
+      "move_sequence": [],
+      "pattern_history": {}
     }
   },
-  "checksum": "f40056080151d26e6d5501ff415469a2baa42d51187cd913e03b3903f60f6a6b"
+  "checksum": "17918e78aaae38be5626ea2c1f904799d82c1ce6d9c8e887b788b9e41456ceb1"
 }

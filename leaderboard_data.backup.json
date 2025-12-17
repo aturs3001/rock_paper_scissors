@@ -1,13 +1,13 @@
 {
   "version": "2.0",
-  "last_updated": "2025-12-16T19:51:52.376777",
+  "last_updated": "2025-12-16T20:12:11.314821",
   "leaderboard": {
     "cpu-00000000-0000-0000-0000-000000000000": {
       "id": "cpu-00000000-0000-0000-0000-000000000000",
       "name": "CPU",
       "score": 6,
-      "games_won": 0,
-      "games_played": 0,
+      "games_won": 1,
+      "games_played": 1,
       "is_cpu": true,
       "created_at": "2025-12-16T19:50:35.265165",
       "choice_history": {
@@ -21,11 +21,11 @@
       "name": "Aric",
       "score": 1,
       "games_won": 0,
-      "games_played": 0,
+      "games_played": 1,
       "is_cpu": false,
       "created_at": "2025-12-16T19:50:52.134051",
       "choice_history": {
-        "rock": 2,
+        "rock": 3,
         "paper": 3,
         "scissors": 4
       },
@@ -38,7 +38,8 @@
         "scissors",
         "scissors",
         "rock",
-        "paper"
+        "paper",
+        "rock"
       ],
       "pattern_history": {
         "('scissors', 'paper')": {
@@ -52,7 +53,7 @@
           "scissors": 0
         },
         "('rock', 'paper')": {
-          "rock": 0,
+          "rock": 1,
           "paper": 0,
           "scissors": 1
         },
@@ -72,7 +73,23 @@
           "scissors": 0
         }
       }
+    },
+    "f6732975-903f-40b3-8553-6ee02fc3364c": {
+      "id": "f6732975-903f-40b3-8553-6ee02fc3364c",
+      "name": "Aric",
+      "score": 0,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-16T20:12:11.313576",
+      "choice_history": {
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0
+      },
+      "move_sequence": [],
+      "pattern_history": {}
     }
   },
-  "checksum": "5d7a5101aa890c144a8d1c85593f4a580730be83adc1a6eef0f2b5442a12db39"
+  "checksum": "17918e78aaae38be5626ea2c1f904799d82c1ce6d9c8e887b788b9e41456ceb1"
 }
