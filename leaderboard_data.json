@@ -1,5 +1,79 @@
 {
-  "leaderboard": {},
-  "checksum": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-  "saved_at": "2025-12-16T19:34:35.659542"
+  "version": "2.0",
+  "last_updated": "2025-12-16T19:51:57.868352",
+  "leaderboard": {
+    "cpu-00000000-0000-0000-0000-000000000000": {
+      "id": "cpu-00000000-0000-0000-0000-000000000000",
+      "name": "CPU",
+      "score": 6,
+      "games_won": 1,
+      "games_played": 1,
+      "is_cpu": true,
+      "created_at": "2025-12-16T19:50:35.265165",
+      "choice_history": {
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0
+      }
+    },
+    "a60d43c8-3e84-405f-a2a3-9e433a95ace3": {
+      "id": "a60d43c8-3e84-405f-a2a3-9e433a95ace3",
+      "name": "Aric",
+      "score": 1,
+      "games_won": 0,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-16T19:50:52.134051",
+      "choice_history": {
+        "rock": 3,
+        "paper": 3,
+        "scissors": 4
+      },
+      "move_sequence": [
+        "scissors",
+        "paper",
+        "rock",
+        "paper",
+        "scissors",
+        "scissors",
+        "scissors",
+        "rock",
+        "paper",
+        "rock"
+      ],
+      "pattern_history": {
+        "('scissors', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('rock', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('paper', 'scissors')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('scissors', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        }
+      }
+    }
+  },
+  "checksum": "f40056080151d26e6d5501ff415469a2baa42d51187cd913e03b3903f60f6a6b"
 }

@@ -1,28 +1,56 @@
 {
+  "version": "2.0",
+  "last_updated": "2025-12-16T19:51:52.376777",
   "leaderboard": {
-    "Aric": {
-      "score": 8,
-      "games_won": 1,
-      "games_played": 2,
-      "rounds_played": 10,
+    "cpu-00000000-0000-0000-0000-000000000000": {
+      "id": "cpu-00000000-0000-0000-0000-000000000000",
+      "name": "CPU",
+      "score": 6,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": true,
+      "created_at": "2025-12-16T19:50:35.265165",
       "choice_history": {
-        "rock": 3,
-        "paper": 5,
-        "scissors": 2
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0
+      }
+    },
+    "a60d43c8-3e84-405f-a2a3-9e433a95ace3": {
+      "id": "a60d43c8-3e84-405f-a2a3-9e433a95ace3",
+      "name": "Aric",
+      "score": 1,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-16T19:50:52.134051",
+      "choice_history": {
+        "rock": 2,
+        "paper": 3,
+        "scissors": 4
       },
       "move_sequence": [
+        "scissors",
+        "paper",
         "rock",
         "paper",
         "scissors",
-        "paper",
-        "paper",
-        "paper",
-        "rock",
-        "rock",
         "scissors",
+        "scissors",
+        "rock",
         "paper"
       ],
       "pattern_history": {
+        "('scissors', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
         "('rock', 'paper')": {
           "rock": 0,
           "paper": 0,
@@ -30,77 +58,21 @@
         },
         "('paper', 'scissors')": {
           "rock": 0,
-          "paper": 1,
-          "scissors": 0
-        },
-        "('scissors', 'paper')": {
-          "rock": 0,
-          "paper": 1,
-          "scissors": 0
-        },
-        "('paper', 'paper')": {
-          "rock": 1,
-          "paper": 1,
-          "scissors": 0
-        },
-        "('paper', 'rock')": {
-          "rock": 1,
-          "paper": 0,
-          "scissors": 0
-        },
-        "('rock', 'rock')": {
-          "rock": 0,
           "paper": 0,
           "scissors": 1
-        },
-        "('rock', 'scissors')": {
-          "rock": 0,
-          "paper": 1,
-          "scissors": 0
-        }
-      }
-    },
-    "CPU": {
-      "score": 6,
-      "games_won": 1,
-      "games_played": 2,
-      "rounds_played": 10,
-      "choice_history": {
-        "rock": 0,
-        "paper": 3,
-        "scissors": 7
-      },
-      "move_sequence": [
-        "paper",
-        "scissors",
-        "paper",
-        "scissors",
-        "paper",
-        "scissors",
-        "scissors",
-        "scissors",
-        "scissors",
-        "scissors"
-      ],
-      "pattern_history": {
-        "('paper', 'scissors')": {
-          "rock": 0,
-          "paper": 2,
-          "scissors": 1
-        },
-        "('scissors', 'paper')": {
-          "rock": 0,
-          "paper": 0,
-          "scissors": 2
         },
         "('scissors', 'scissors')": {
-          "rock": 0,
+          "rock": 1,
           "paper": 0,
-          "scissors": 3
+          "scissors": 1
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
         }
       }
     }
   },
-  "checksum": "6b27677b1949de3f0f3477cb3e3b898381dde46b77f379bf6ece1379d1e42b4d",
-  "saved_at": "2025-12-16T19:34:22.664133"
+  "checksum": "5d7a5101aa890c144a8d1c85593f4a580730be83adc1a6eef0f2b5442a12db39"
 }

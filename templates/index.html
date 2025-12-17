@@ -71,10 +71,47 @@
             padding-bottom: 10px;
         }
 
-        .player-inputs {
+        .hidden {
+            display: none !important;
+        }
+
+        /* Setup Area */
+        .setup-area {
             display: flex;
             flex-direction: column;
             gap: 15px;
+        }
+
+        .game-mode-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mode-btn:hover {
+            border-color: #e94560;
+            color: #fff;
+        }
+
+        .mode-btn.active {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.2);
+            color: #fff;
         }
 
         .input-group {
@@ -89,13 +126,12 @@
         }
 
         .input-group input {
-            padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
             font-size: 1rem;
-            transition: border-color 0.3s;
         }
 
         .input-group input:focus {
@@ -109,23 +145,23 @@
         }
 
         .btn {
-            padding: 12px 25px;
-            border: none;
+            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 1rem;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 1rem;
             font-weight: 600;
+            transition: all 0.3s;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #e94560, #c73e54);
-            color: #fff;
+            color: white;
         }
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
         }
 
         .btn-primary:disabled {
@@ -143,6 +179,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* Game Area */
         .game-area {
             display: none;
         }
@@ -157,13 +194,13 @@
         }
 
         .round-info h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            color: #e94560;
+            font-size: 1.3rem;
         }
 
         .score {
             font-size: 2rem;
-            color: #e94560;
+            margin-top: 10px;
             font-weight: bold;
         }
 
@@ -176,41 +213,36 @@
 
         .player-card {
             text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            min-width: 120px;
         }
 
         .player-card h4 {
             color: #a0a0a0;
+            font-size: 0.85rem;
             margin-bottom: 5px;
-            font-size: 0.9rem;
         }
 
         .player-card .name {
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         .vs-text {
             font-size: 1.5rem;
             color: #e94560;
-            font-weight: bold;
         }
 
         .turn-indicator {
-            text-align: center;
-            padding: 15px;
-            background: rgba(233, 69, 96, 0.1);
+            background: rgba(233, 69, 96, 0.2);
+            border: 1px solid #e94560;
             border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         .turn-indicator.warning {
             background: rgba(255, 193, 7, 0.2);
-            border: 1px solid rgba(255, 193, 7, 0.5);
+            border-color: #ffc107;
         }
 
         .turn-indicator .player-name {
@@ -220,22 +252,19 @@
 
         .turn-indicator .look-away {
             display: block;
-            margin-top: 5px;
+            margin-top: 8px;
             color: #ffc107;
             font-size: 0.9rem;
         }
 
         .p1-locked {
-            text-align: center;
-            padding: 10px;
-            background: rgba(76, 175, 80, 0.2);
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
             border-radius: 8px;
+            padding: 10px;
+            text-align: center;
             margin-bottom: 15px;
-            color: #4caf50;
-        }
-
-        .hidden {
-            display: none !important;
+            color: #28a745;
         }
 
         .choices {
@@ -243,14 +272,13 @@
             justify-content: center;
             gap: 15px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .choice-btn {
             width: 100px;
             height: 100px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
             transition: all 0.3s;
@@ -268,207 +296,170 @@
 
         .choice-btn.selected {
             border-color: #e94560;
-            background: rgba(233, 69, 96, 0.2);
-            box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+            background: rgba(233, 69, 96, 0.3);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.4);
         }
 
-        .choice-btn .icon {
+        .choice-btn .emoji {
             font-size: 2.5rem;
         }
 
         .choice-btn .label {
+            color: #fff;
             font-size: 0.8rem;
-            color: #a0a0a0;
         }
 
+        /* Result Display */
         .result-display {
+            display: none;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            margin-top: 20px;
-            display: none;
+            margin-top: 15px;
         }
 
         .result-display.active {
             display: block;
         }
 
-        .result-choices {
+        .result-display.win {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+        }
+
+        .result-display.lose {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+        }
+
+        .result-display.tie {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+        }
+
+        .choices-reveal {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 30px;
+            gap: 40px;
             margin-bottom: 15px;
         }
 
-        .result-choice {
+        .choice-reveal {
             text-align: center;
         }
 
-        .result-choice .icon {
+        .choice-reveal .player-label {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .choice-reveal .choice-emoji {
             font-size: 3rem;
         }
 
-        .result-choice .name {
-            font-size: 0.9rem;
-            color: #a0a0a0;
-        }
-
         .result-text {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-top: 10px;
         }
 
         .result-text.win {
-            color: #4caf50;
+            color: #28a745;
         }
 
         .result-text.lose {
-            color: #f44336;
+            color: #dc3545;
         }
 
         .result-text.tie {
             color: #ffc107;
         }
 
-        .leaderboard-section {
-            margin-top: 20px;
-        }
-
-        .leaderboard-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .tab-btn {
-            flex: 1;
+        .ai-info {
+            margin-top: 15px;
             padding: 10px;
-            border: none;
+            background: rgba(100, 100, 255, 0.1);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #a0a0a0;
-            cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.85rem;
         }
 
-        .tab-btn.active {
-            background: #e94560;
-            color: #fff;
-        }
-
-        .leaderboard-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: background 0.3s;
-        }
-
-        .leaderboard-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .leaderboard-item .rank {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: rgba(233, 69, 96, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .ai-info .title {
+            color: #6464ff;
             font-weight: bold;
-            color: #e94560;
-            margin-right: 10px;
-        }
-
-        .leaderboard-item .player-info {
-            flex: 1;
-        }
-
-        .leaderboard-item .player-name {
-            font-weight: 600;
-        }
-
-        .leaderboard-item .player-stats {
-            font-size: 0.8rem;
-            color: #a0a0a0;
-        }
-
-        .leaderboard-item .score {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #e94560;
-        }
-
-        .cpu-badge {
-            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 8px;
-            font-weight: bold;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #a0a0a0;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .mode-btn:hover {
-            border-color: #e94560;
-        }
-
-        .mode-btn.active {
-            border-color: #e94560;
-            background: rgba(233, 69, 96, 0.2);
-            color: #fff;
-        }
-
-        .mode-btn .icon {
-            font-size: 1.5rem;
-            display: block;
             margin-bottom: 5px;
         }
 
-        .game-over-modal {
+        .ai-info .detail {
+            color: #a0a0a0;
+        }
+
+        /* Leaderboard */
+        .leaderboard-section {
+            margin-bottom: 25px;
+        }
+
+        .leaderboard-section h3 {
+            color: #e94560;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-table th {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .leaderboard-table td {
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .cpu-badge {
+            background: #6464ff;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        .empty-state {
+            color: #a0a0a0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Modal */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
 
-        .game-over-modal.active {
+        .modal.active {
             display: flex;
         }
 
@@ -481,40 +472,23 @@
             max-width: 400px;
         }
 
-        .modal-content h2 {
+        .modal h2 {
             color: #e94560;
-            margin-bottom: 20px;
-            font-size: 2rem;
+            margin-bottom: 15px;
         }
 
-        .modal-content .winner-name {
+        .modal .winner-name {
             font-size: 1.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
-        .modal-content .final-score {
-            font-size: 1.2rem;
+        .modal .final-score {
             color: #a0a0a0;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
-        .ai-info {
-            background: rgba(156, 39, 176, 0.1);
-            border: 1px solid rgba(156, 39, 176, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-        }
-
-        .ai-info .title {
-            color: #ce93d8;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .ai-info .detail {
-            color: #a0a0a0;
+        .actions {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -523,41 +497,44 @@
     <div class="container">
         <header>
             <h1>🎮 Rock-Paper-Scissors Tournament</h1>
-            <p>CSCI 210 Final Project - Data Structures & Algorithms</p>
+            <p>CSCI 210 Final Project | Smart AI with Player Memory</p>
         </header>
 
         <div class="main-content">
+            <!-- Game Panel -->
             <div class="panel">
                 <h2>🎯 Game Arena</h2>
 
-                <div id="setup-area">
-                    <div class="mode-selector">
+                <!-- Setup Area -->
+                <div id="setup-area" class="setup-area">
+                    <div class="game-mode-toggle">
                         <button class="mode-btn active" id="pvp-mode" onclick="setGameMode('pvp')">
-                            <span class="icon">👥</span>
-                            Player vs Player
+                            👥 Player vs Player
                         </button>
                         <button class="mode-btn" id="pvc-mode" onclick="setGameMode('pvc')">
-                            <span class="icon">🤖</span>
-                            Player vs CPU
+                            🤖 Player vs CPU
                         </button>
                     </div>
 
-                    <div class="player-inputs">
-                        <div class="input-group">
-                            <label for="player1-name">Player 1 Name:</label>
-                            <input type="text" id="player1-name" placeholder="Enter Player 1 name">
-                        </div>
-                        <div class="input-group" id="player2-input-group">
-                            <label for="player2-name">Player 2 Name:</label>
-                            <input type="text" id="player2-name" placeholder="Enter Player 2 name">
-                        </div>
-                        <button class="btn btn-primary" id="start-game-btn" disabled>Start Game</button>
+                    <div class="input-group">
+                        <label for="player1-name">Player 1 Name:</label>
+                        <input type="text" id="player1-name" placeholder="Enter name">
                     </div>
+
+                    <div class="input-group" id="player2-input-group">
+                        <label for="player2-name">Player 2 Name:</label>
+                        <input type="text" id="player2-name" placeholder="Enter name">
+                    </div>
+
+                    <button class="btn btn-primary" id="start-game-btn" disabled onclick="startGame()">
+                        Start Game
+                    </button>
                 </div>
 
+                <!-- Game Area -->
                 <div id="game-area" class="game-area">
                     <div class="round-info">
-                        <h3>Round <span id="current-round">0</span> / 10</h3>
+                        <h3>Round <span id="current-round">1</span> / 10</h3>
                         <div class="score">
                             <span id="p1-wins">0</span> - <span id="p2-wins">0</span>
                         </div>
@@ -586,15 +563,15 @@
 
                     <div class="choices">
                         <button class="choice-btn" data-choice="rock" onclick="makeChoice('rock')">
-                            <span class="icon">🪨</span>
+                            <span class="emoji">🪨</span>
                             <span class="label">Rock</span>
                         </button>
                         <button class="choice-btn" data-choice="paper" onclick="makeChoice('paper')">
-                            <span class="icon">📄</span>
+                            <span class="emoji">📄</span>
                             <span class="label">Paper</span>
                         </button>
                         <button class="choice-btn" data-choice="scissors" onclick="makeChoice('scissors')">
-                            <span class="icon">✂️</span>
+                            <span class="emoji">✂️</span>
                             <span class="label">Scissors</span>
                         </button>
                     </div>
@@ -603,76 +580,114 @@
                         Confirm Choice
                     </button>
 
-                    <div class="result-display" id="result-display">
-                        <div class="result-choices">
-                            <div class="result-choice">
-                                <div class="icon" id="result-p1-choice">❓</div>
-                                <div class="name" id="result-p1-name">Player 1</div>
+                    <div id="result-display" class="result-display">
+                        <div class="choices-reveal">
+                            <div class="choice-reveal">
+                                <div class="player-label" id="result-p1-label">Player 1</div>
+                                <div class="choice-emoji" id="result-p1-choice">❓</div>
                             </div>
-                            <div class="vs-text">VS</div>
-                            <div class="result-choice">
-                                <div class="icon" id="result-p2-choice">❓</div>
-                                <div class="name" id="result-p2-name">Player 2</div>
+                            <div class="choice-reveal">
+                                <div class="player-label" id="result-p2-label">Player 2</div>
+                                <div class="choice-emoji" id="result-p2-choice">❓</div>
                             </div>
                         </div>
-                        <div class="result-text" id="result-text">-</div>
+                        <div class="result-text" id="result-text"></div>
                         <div class="ai-info hidden" id="ai-info">
-                            <div class="title">🧠 AI Analysis</div>
-                            <div class="detail" id="ai-detail">-</div>
+                            <div class="title">🧠 CPU Analysis</div>
+                            <div class="detail" id="ai-detail"></div>
                         </div>
                     </div>
                 </div>
+
+                <div class="actions">
+                    <button class="btn btn-secondary" onclick="resetTournament()">Reset Tournament</button>
+                </div>
             </div>
 
+            <!-- Leaderboard Panel -->
             <div class="panel">
                 <h2>🏆 Leaderboard</h2>
 
                 <div class="leaderboard-section">
-                    <div class="leaderboard-tabs">
-                        <button class="tab-btn active" id="tab-score" onclick="showLeaderboard('score')">By
-                            Score</button>
-                        <button class="tab-btn" id="tab-name" onclick="showLeaderboard('name')">By Name</button>
-                    </div>
-
-                    <div class="leaderboard-list" id="leaderboard-list">
-                        <p style="color: #a0a0a0; text-align: center;">No players yet. Start a game!</p>
-                    </div>
+                    <h3>📊 Sorted by Score</h3>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Wins</th>
+                            </tr>
+                        </thead>
+                        <tbody id="score-leaderboard">
+                            <tr>
+                                <td colspan="4" class="empty-state">No players yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div style="margin-top: 20px;">
-                    <button class="btn btn-secondary" onclick="resetTournament()" style="width: 100%;">
-                        🔄 Reset Tournament
-                    </button>
+                <div class="leaderboard-section">
+                    <h3>🔤 Sorted by Name</h3>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Games</th>
+                                <th>Rounds</th>
+                            </tr>
+                        </thead>
+                        <tbody id="name-leaderboard">
+                            <tr>
+                                <td colspan="4" class="empty-state">No players yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="game-over-modal" id="game-over-modal">
+    <!-- Game Over Modal -->
+    <div class="modal" id="game-over-modal">
         <div class="modal-content">
             <h2>🎉 Game Over!</h2>
-            <div class="winner-name" id="modal-winner">Winner: -</div>
-            <div class="final-score" id="modal-score">Final Score: 0 - 0</div>
-            <button class="btn btn-primary" onclick="newGame()">Play Again</button>
+            <div class="winner-name" id="modal-winner">-</div>
+            <div class="final-score" id="modal-score">-</div>
+            <button class="btn btn-primary" onclick="newGame()">New Game</button>
         </div>
     </div>
 
     <script>
-        const choiceIcons = {
+        // =============================================================================
+        // Game State Variables
+        // =============================================================================
+        const choiceEmojis = {
             rock: '🪨',
             paper: '📄',
             scissors: '✂️'
         };
 
         let gameMode = 'pvp';
+
+        // Player IDs (unique identifiers - used internally for API calls)
+        let player1Id = null;
+        let player2Id = null;
+
+        // Player Names (display names - shown to user)
         let player1Name = '';
         let player2Name = '';
+
         let player1Choice = null;
         let player2Choice = null;
         let selectedChoice = null;
         let currentTurn = 1;
         let lastAiInfo = null;
 
+        // =============================================================================
+        // DOM Elements
+        // =============================================================================
         const player1Input = document.getElementById('player1-name');
         const player2Input = document.getElementById('player2-name');
         const player2InputGroup = document.getElementById('player2-input-group');
@@ -683,9 +698,15 @@
         const turnIndicator = document.getElementById('turn-indicator');
         const p1Locked = document.getElementById('p1-locked');
 
+        // =============================================================================
+        // Event Listeners
+        // =============================================================================
         player1Input.addEventListener('input', validateInputs);
         player2Input.addEventListener('input', validateInputs);
 
+        // =============================================================================
+        // Game Mode Toggle
+        // =============================================================================
         function setGameMode(mode) {
             gameMode = mode;
             document.getElementById('pvp-mode').classList.toggle('active', mode === 'pvp');
@@ -707,6 +728,9 @@
             startGameBtn.disabled = !(p1Valid && p2Valid);
         }
 
+        // =============================================================================
+        // Choice Selection
+        // =============================================================================
         function makeChoice(choice) {
             selectedChoice = choice;
             document.querySelectorAll('.choice-btn').forEach(btn => {
@@ -719,6 +743,8 @@
             if (!selectedChoice) return;
 
             if (currentTurn === 1) {
+                // FAIR PLAY: Player's choice is stored LOCALLY only
+                // It is NOT sent to the server yet - CPU cannot see it
                 player1Choice = selectedChoice;
                 selectedChoice = null;
                 confirmChoiceBtn.disabled = true;
@@ -729,16 +755,21 @@
                     turnIndicator.innerHTML = '🤖 CPU is analyzing your patterns...';
 
                     try {
+                        // CPU analyzes HISTORICAL data only (past rounds)
+                        // Current round choice (player1Choice) is still local-only
+                        // CPU cannot see what player picked this round
                         const response = await fetch('/api/cpu/strategic_choice', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ opponent_name: player1Name })
+                            body: JSON.stringify({ opponent_id: player1Id })
                         });
 
                         const data = await response.json();
                         player2Choice = data.choice;
                         lastAiInfo = data;
 
+                        // AFTER CPU has chosen, NOW we send both choices to server
+                        // This is when choices become "historical" for future analysis
                         setTimeout(() => {
                             playRound();
                         }, 1000);
@@ -782,34 +813,52 @@
             confirmChoiceBtn.disabled = true;
         }
 
+        // =============================================================================
+        // Game Flow Functions
+        // =============================================================================
         async function startGame() {
             player1Name = player1Input.value.trim();
             player2Name = gameMode === 'pvc' ? 'CPU' : player2Input.value.trim();
 
             try {
-                await fetch('/api/player/register', {
+                // Register Player 1 and get their unique ID
+                const p1Response = await fetch('/api/player/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: player1Name })
                 });
+                const p1Data = await p1Response.json();
+                player1Id = p1Data.player.id;
+                console.log(`Player 1 registered: ${player1Name} (ID: ${player1Id})`);
 
-                await fetch('/api/player/register', {
+                // Register Player 2 and get their unique ID
+                const p2Response = await fetch('/api/player/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: player2Name, is_cpu: gameMode === 'pvc' })
                 });
+                const p2Data = await p2Response.json();
+                player2Id = p2Data.player.id;
+                console.log(`Player 2 registered: ${player2Name} (ID: ${player2Id})`);
 
+                // Start game using player IDs
                 await fetch('/api/game/start', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ player1: player1Name, player2: player2Name })
+                    body: JSON.stringify({
+                        player1_id: player1Id,
+                        player2_id: player2Id
+                    })
                 });
 
+                // Update UI - show names only (not IDs)
                 setupArea.style.display = 'none';
                 gameArea.classList.add('active');
 
                 document.getElementById('p1-display').textContent = player1Name;
                 document.getElementById('p2-display').textContent = player2Name + (gameMode === 'pvc' ? ' 🤖' : '');
+                document.getElementById('result-p1-label').textContent = player1Name;
+                document.getElementById('result-p2-label').textContent = player2Name;
                 document.getElementById('current-round').textContent = '1';
                 document.getElementById('p1-wins').textContent = '0';
                 document.getElementById('p2-wins').textContent = '0';
@@ -870,22 +919,26 @@
             const aiInfo = document.getElementById('ai-info');
             const aiDetail = document.getElementById('ai-detail');
 
-            document.getElementById('result-p1-choice').textContent = choiceIcons[data.round.player1_choice];
-            document.getElementById('result-p2-choice').textContent = choiceIcons[data.round.player2_choice];
-            document.getElementById('result-p1-name').textContent = player1Name;
-            document.getElementById('result-p2-name').textContent = player2Name;
+            document.getElementById('result-p1-choice').textContent = choiceEmojis[player1Choice];
+            document.getElementById('result-p2-choice').textContent = choiceEmojis[player2Choice];
+
+            resultDisplay.classList.remove('win', 'lose', 'tie');
 
             if (data.round.result === 'player1') {
-                resultText.textContent = `${player1Name} wins this round!`;
+                resultDisplay.classList.add('win');
+                resultText.textContent = `${player1Name} wins the round!`;
                 resultText.className = 'result-text win';
             } else if (data.round.result === 'player2') {
-                resultText.textContent = `${player2Name} wins this round!`;
+                resultDisplay.classList.add('lose');
+                resultText.textContent = `${player2Name} wins the round!`;
                 resultText.className = 'result-text lose';
             } else {
+                resultDisplay.classList.add('tie');
                 resultText.textContent = "It's a tie!";
                 resultText.className = 'result-text tie';
             }
 
+            // Show AI info if playing vs CPU
             if (gameMode === 'pvc' && lastAiInfo) {
                 aiInfo.classList.remove('hidden');
                 let strategyLabel = '';
@@ -907,10 +960,6 @@
                     case 'learning':
                         strategyEmoji = '📚';
                         strategyLabel = 'Still Learning';
-                        break;
-                    case 'counter_prediction':
-                        strategyEmoji = '🎯';
-                        strategyLabel = 'Counter-Prediction';
                         break;
                     case 'random_variation':
                         strategyEmoji = '🎲';
@@ -940,7 +989,7 @@
             const scoreText = document.getElementById('modal-score');
 
             if (data.game_winner) {
-                winnerText.textContent = `🏆 ${data.game_winner} Wins!`;
+                winnerText.textContent = `🏆 ${data.game_winner.name} Wins!`;
             } else {
                 winnerText.textContent = "It's a Draw!";
             }
@@ -950,98 +999,109 @@
             modal.classList.add('active');
         }
 
-        function newGame() {
+        async function newGame() {
             document.getElementById('game-over-modal').classList.remove('active');
             gameArea.classList.remove('active');
-            setupArea.style.display = 'block';
+            setupArea.style.display = 'flex';
             document.getElementById('result-display').classList.remove('active');
             document.getElementById('ai-info').classList.add('hidden');
 
-            fetch('/api/game/state')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.previous_winner) {
-                        player1Input.value = data.previous_winner;
-                        player1Input.disabled = true;
-                    } else {
-                        player1Input.value = '';
-                        player1Input.disabled = false;
-                    }
-                    player2Input.value = '';
-                    validateInputs();
-                });
+            // Check for previous winner
+            const response = await fetch('/api/game/state');
+            const gameState = await response.json();
+
+            // If there was a previous winner (and not CPU), retain them
+            if (gameState.previous_winner && gameState.previous_winner.id) {
+                player1Input.value = gameState.previous_winner.name;
+                player1Id = gameState.previous_winner.id;
+                player1Input.disabled = true;
+            } else {
+                player1Input.value = '';
+                player1Input.disabled = false;
+                player1Id = null;
+            }
+
+            player2Input.value = '';
+            player2Id = null;
+
+            if (gameMode === 'pvc') {
+                player2InputGroup.classList.add('hidden');
+            }
+
+            validateInputs();
         }
 
+        async function resetTournament() {
+            if (!confirm('Reset the entire tournament? All player data and scores will be lost!')) {
+                return;
+            }
+
+            await fetch('/api/reset', { method: 'POST' });
+
+            // Reset all state
+            gameArea.classList.remove('active');
+            setupArea.style.display = 'flex';
+            document.getElementById('game-over-modal').classList.remove('active');
+            document.getElementById('result-display').classList.remove('active');
+            document.getElementById('ai-info').classList.add('hidden');
+
+            player1Input.value = '';
+            player1Input.disabled = false;
+            player2Input.value = '';
+
+            player1Id = null;
+            player2Id = null;
+
+            gameMode = 'pvp';
+            setGameMode('pvp');
+
+            loadLeaderboard();
+        }
+
+        // =============================================================================
+        // Leaderboard Functions
+        // =============================================================================
         async function loadLeaderboard() {
             try {
                 const response = await fetch('/api/leaderboard');
                 const data = await response.json();
 
-                window.leaderboardData = data;
-                showLeaderboard('score');
+                // Update score-sorted leaderboard (show names, not IDs)
+                const scoreBody = document.getElementById('score-leaderboard');
+                if (data.sorted_by_score.length === 0) {
+                    scoreBody.innerHTML = '<tr><td colspan="4" class="empty-state">No players yet</td></tr>';
+                } else {
+                    scoreBody.innerHTML = data.sorted_by_score.map((player, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${player.name}${player.is_cpu ? '<span class="cpu-badge">CPU</span>' : ''}</td>
+                            <td>${player.score}</td>
+                            <td>${player.games_won}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Update name-sorted leaderboard (show names, not IDs)
+                const nameBody = document.getElementById('name-leaderboard');
+                if (data.sorted_by_name.length === 0) {
+                    nameBody.innerHTML = '<tr><td colspan="4" class="empty-state">No players yet</td></tr>';
+                } else {
+                    nameBody.innerHTML = data.sorted_by_name.map(player => `
+                        <tr>
+                            <td>${player.name}${player.is_cpu ? '<span class="cpu-badge">CPU</span>' : ''}</td>
+                            <td>${player.score}</td>
+                            <td>${player.games_played}</td>
+                            <td>${player.total_rounds}</td>
+                        </tr>
+                    `).join('');
+                }
+
             } catch (error) {
                 console.error('Error loading leaderboard:', error);
             }
         }
 
-        function showLeaderboard(sortBy) {
-            document.getElementById('tab-score').classList.toggle('active', sortBy === 'score');
-            document.getElementById('tab-name').classList.toggle('active', sortBy === 'name');
-
-            const data = window.leaderboardData;
-            if (!data) return;
-
-            const players = sortBy === 'score' ? data.by_score : data.by_name;
-            const listEl = document.getElementById('leaderboard-list');
-
-            if (players.length === 0) {
-                listEl.innerHTML = '<p style="color: #a0a0a0; text-align: center;">No players yet. Start a game!</p>';
-                return;
-            }
-
-            listEl.innerHTML = players.map((player, index) => `
-                <div class="leaderboard-item">
-                    <span class="rank">${sortBy === 'score' ? index + 1 : '-'}</span>
-                    <div class="player-info">
-                        <div class="player-name">
-                            ${player.name}
-                            ${player.is_cpu ? '<span class="cpu-badge">CPU</span>' : ''}
-                        </div>
-                        <div class="player-stats">
-                            Games: ${player.games_played} | Wins: ${player.games_won}
-                        </div>
-                    </div>
-                    <span class="score">${player.score}</span>
-                </div>
-            `).join('');
-        }
-
-        async function resetTournament() {
-            if (!confirm('Are you sure you want to reset the entire tournament? This will delete all player data.')) {
-                return;
-            }
-
-            try {
-                await fetch('/api/reset', { method: 'POST' });
-
-                gameArea.classList.remove('active');
-                setupArea.style.display = 'block';
-                document.getElementById('game-over-modal').classList.remove('active');
-                document.getElementById('result-display').classList.remove('active');
-                document.getElementById('ai-info').classList.add('hidden');
-
-                player1Input.value = '';
-                player1Input.disabled = false;
-                player2Input.value = '';
-
-                loadLeaderboard();
-
-            } catch (error) {
-                console.error('Error resetting tournament:', error);
-            }
-        }
-
-        startGameBtn.addEventListener('click', startGame);
+        // Initial leaderboard load
         loadLeaderboard();
     </script>
 </body>

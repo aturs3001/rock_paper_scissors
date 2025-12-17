@@ -6,7 +6,8 @@ A Flask-based web application that manages a persistent, multi-player
 Rock-Paper-Scissors tournament using Dictionary and List data structures.
 
 Features:
-- Global LEADERBOARD dictionary for O(1) player lookups
+- Global LEADERBOARD dictionary for O(1) player lookups by unique ID
+- Unique player IDs allow same username for different players
 - List conversion with sorting for dual leaderboard views
 - Strategic AI with player choice memory and pattern recognition
 - Secure file-based persistence with SHA-256 checksums
@@ -17,6 +18,7 @@ import random
 import json
 import hashlib
 import os
+import uuid
 from datetime import datetime
 
 app = Flask(__name__)
@@ -31,43 +33,52 @@ BACKUP_FILE = "leaderboard_data.backup.json"
 # CENTRAL DATA STORE: Dictionary (LEADERBOARD)
 # =============================================================================
 # Structure: Global Python Dictionary serving as single source of truth
-# Key: Unique player name (String)
-# Value: Nested dictionary with cumulative statistics
+# Key: Unique player ID (UUID string)
+# Value: Nested dictionary with player name and cumulative statistics
 # Purpose: O(1) average time complexity for searching and updating
 # 
-# Enhanced with choice_history and pattern tracking for AI:
+# Structure with unique IDs and AI pattern tracking:
 # {
-#     "PlayerName": {
+#     "uuid-string-here": {
+#         "id": "uuid-string-here",
+#         "name": "PlayerName",           # Display name (can be duplicated)
 #         "score": int,
 #         "games_won": int,
 #         "games_played": int,
 #         "is_cpu": bool,
-#         "choice_history": {           # Frequency counts
+#         "created_at": "ISO timestamp",
+#         "choice_history": {             # Frequency counts for AI
 #             "rock": int,
 #             "paper": int,
 #             "scissors": int
 #         },
-#         "move_sequence": [],           # Last N moves for pattern detection
-#         "pattern_history": {           # What move follows each 2-move pattern
-#             "(rock,rock)": {"rock": 0, "paper": 0, "scissors": 0},
-#             "(rock,paper)": {...}, ...
+#         "move_sequence": [],            # Last N moves for pattern detection
+#         "pattern_history": {            # What move follows each 2-move pattern
+#             "('rock','rock')": {"rock": 0, "paper": 0, "scissors": 0},
+#             ...
 #         }
 #     }
 # }
 # =============================================================================
 LEADERBOARD = {}
 
+# CPU's fixed ID (singleton - only one CPU player)
+CPU_ID = "cpu-00000000-0000-0000-0000-000000000000"
+
 # =============================================================================
 # GAME STATE: Dictionary to track current game session
 # =============================================================================
 GAME_STATE = {
-    "player1": None,
-    "player2": None,
+    "player1_id": None,
+    "player2_id": None,
+    "player1_name": None,
+    "player2_name": None,
     "player1_round_wins": 0,
     "player2_round_wins": 0,
     "current_round": 0,
     "game_active": False,
-    "previous_winner": None,
+    "previous_winner_id": None,
+    "previous_winner_name": None,
     "game_history": []
 }
 
@@ -84,6 +95,25 @@ COUNTER_MOVES = {
     "paper": "scissors",
     "scissors": "rock"
 }
+
+
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+def generate_player_id():
+    """Generate a unique player ID."""
+    return str(uuid.uuid4())
+
+
+def get_player_by_id(player_id):
+    """Get player data by their unique ID. O(1) lookup."""
+    return LEADERBOARD.get(player_id)
+
+
+def get_player_name(player_id):
+    """Get player's display name by ID."""
+    player = LEADERBOARD.get(player_id)
+    return player["name"] if player else None
 
 
 # =============================================================================
@@ -106,79 +136,117 @@ def save_leaderboard():
             with open(BACKUP_FILE, 'w') as f:
                 f.write(backup_data)
         except Exception as e:
-            print(f"Warning: Could not create backup: {e}")
+            print(f"Backup failed: {e}")
     
     save_data = {
+        "version": "2.0",
+        "last_updated": datetime.now().isoformat(),
         "leaderboard": LEADERBOARD,
-        "checksum": calculate_checksum(LEADERBOARD),
-        "saved_at": datetime.now().isoformat()
+        "checksum": calculate_checksum(LEADERBOARD)
     }
     
-    with open(DATA_FILE, 'w') as f:
-        json.dump(save_data, f, indent=2)
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(save_data, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"Save failed: {e}")
+        return False
 
 
 def load_leaderboard():
-    """Load LEADERBOARD from JSON file with integrity verification."""
+    """Load LEADERBOARD from JSON file with integrity check."""
     global LEADERBOARD
     
     if not os.path.exists(DATA_FILE):
+        print("No data file found. Starting fresh.")
         LEADERBOARD = {}
+        init_cpu_player()
         return
     
     try:
         with open(DATA_FILE, 'r') as f:
             save_data = json.load(f)
         
-        stored_checksum = save_data.get("checksum", "")
         loaded_data = save_data.get("leaderboard", {})
-        calculated_checksum = calculate_checksum(loaded_data)
         
-        if stored_checksum == calculated_checksum:
-            for player_name, stats in loaded_data.items():
-                if "choice_history" not in stats:
-                    stats["choice_history"] = {"rock": 0, "paper": 0, "scissors": 0}
-            LEADERBOARD = loaded_data
-            print(f"Leaderboard loaded successfully ({len(LEADERBOARD)} players)")
-        else:
-            print("Warning: Checksum mismatch, attempting backup restore...")
-            load_from_backup()
-            
+        # Verify checksum if present
+        if "checksum" in save_data:
+            expected = save_data["checksum"]
+            actual = calculate_checksum(loaded_data)
+            if expected != actual:
+                print("WARNING: Checksum mismatch! Loading from backup...")
+                return load_from_backup()
+        
+        LEADERBOARD = loaded_data
+        print(f"Leaderboard loaded successfully ({len(LEADERBOARD)} players)")
+        
+        # Ensure CPU player exists
+        init_cpu_player()
+        
     except Exception as e:
-        print(f"Error loading leaderboard: {e}")
+        print(f"Load failed: {e}")
         load_from_backup()
 
 
 def load_from_backup():
-    """Attempt to restore from backup file."""
+    """Load from backup file if main file is corrupted."""
     global LEADERBOARD
     
-    if os.path.exists(BACKUP_FILE):
-        try:
-            with open(BACKUP_FILE, 'r') as f:
-                backup_data = json.load(f)
-            loaded_data = backup_data.get("leaderboard", {})
-            for player_name, stats in loaded_data.items():
-                if "choice_history" not in stats:
-                    stats["choice_history"] = {"rock": 0, "paper": 0, "scissors": 0}
-            LEADERBOARD = loaded_data
-            print("Restored from backup successfully")
-        except Exception as e:
-            print(f"Backup restore failed: {e}")
-            LEADERBOARD = {}
-    else:
+    if not os.path.exists(BACKUP_FILE):
+        print("No backup file. Starting fresh.")
         LEADERBOARD = {}
+        init_cpu_player()
+        return
+    
+    try:
+        with open(BACKUP_FILE, 'r') as f:
+            save_data = json.load(f)
+        LEADERBOARD = save_data.get("leaderboard", {})
+        print(f"Loaded from backup ({len(LEADERBOARD)} players)")
+        init_cpu_player()
+    except Exception as e:
+        print(f"Backup load failed: {e}")
+        LEADERBOARD = {}
+        init_cpu_player()
 
 
+def init_cpu_player():
+    """Initialize the CPU player if not exists."""
+    global LEADERBOARD
+    if CPU_ID not in LEADERBOARD:
+        LEADERBOARD[CPU_ID] = {
+            "id": CPU_ID,
+            "name": "CPU",
+            "score": 0,
+            "games_won": 0,
+            "games_played": 0,
+            "is_cpu": True,
+            "created_at": datetime.now().isoformat(),
+            "choice_history": {"rock": 0, "paper": 0, "scissors": 0}
+        }
+
+
+# Load data on startup
 load_leaderboard()
 
 
 # =============================================================================
 # AI STRATEGY FUNCTIONS
 # =============================================================================
-def get_strategic_cpu_choice(opponent_name):
+def get_strategic_cpu_choice(opponent_id):
     """
-    AI Strategy: Analyze opponent's play patterns and make strategic counter-pick.
+    AI Strategy: Analyze opponent's HISTORICAL play patterns and make strategic counter-pick.
+    
+    FAIR PLAY: This function ONLY accesses data from COMPLETED rounds:
+    - choice_history: Frequency counts from past rounds only
+    - move_sequence: Last N moves from past rounds only  
+    - pattern_history: Patterns detected from past rounds only
+    
+    The current round's choice is NOT available to this function because:
+    1. Player's choice is stored in frontend memory only
+    2. record_player_choice() is called AFTER this function returns
+    3. No current-round data exists in LEADERBOARD when this runs
     
     Strategy Priority:
     1. Pattern Recognition - If we've seen the last 2 moves before, predict next move
@@ -190,15 +258,18 @@ def get_strategic_cpu_choice(opponent_name):
     MIN_HISTORY_THRESHOLD = 5
     MIN_PATTERN_THRESHOLD = 3
     
-    if opponent_name not in LEADERBOARD:
+    # Get player data by their unique ID
+    player_data = get_player_by_id(opponent_id)
+    
+    if not player_data:
         return {
             "choice": random.choice(choices),
             "strategy_used": "random",
             "confidence": 0,
-            "analysis": "Unknown opponent"
+            "analysis": "Unknown player ID"
         }
     
-    player_data = LEADERBOARD[opponent_name]
+    player_name = player_data.get("name", "Unknown")
     history = player_data.get("choice_history", {"rock": 0, "paper": 0, "scissors": 0})
     total_choices = sum(history.values())
     
@@ -207,11 +278,12 @@ def get_strategic_cpu_choice(opponent_name):
             "choice": random.choice(choices),
             "strategy_used": "learning",
             "confidence": total_choices,
-            "analysis": f"Still learning ({total_choices}/{MIN_HISTORY_THRESHOLD} moves)"
+            "analysis": f"Learning {player_name}'s patterns ({total_choices}/{MIN_HISTORY_THRESHOLD} moves)",
+            "player_id": opponent_id,
+            "player_name": player_name
         }
     
     # Strategy 1: Pattern Recognition
-    # Check if we can predict based on the last 2 moves
     move_sequence = player_data.get("move_sequence", [])
     pattern_history = player_data.get("pattern_history", {})
     
@@ -222,20 +294,20 @@ def get_strategic_cpu_choice(opponent_name):
             pattern_total = sum(pattern_data.values())
             
             if pattern_total >= MIN_PATTERN_THRESHOLD:
-                # Find the most likely next move
                 predicted_move = max(pattern_data, key=pattern_data.get)
                 pattern_confidence = pattern_data[predicted_move] / pattern_total
                 
-                # If confidence > 50%, counter the predicted move
                 if pattern_confidence > 0.5:
                     counter = COUNTER_MOVES[predicted_move]
                     return {
                         "choice": counter,
                         "strategy_used": "pattern",
                         "confidence": round(pattern_confidence * 100),
-                        "analysis": f"Detected pattern: after {last_pattern}, player picks {predicted_move}",
+                        "analysis": f"Detected {player_name}'s pattern: after {last_pattern}, picks {predicted_move}",
                         "predicted_opponent_move": predicted_move,
-                        "pattern_occurrences": pattern_total
+                        "pattern_occurrences": pattern_total,
+                        "player_id": opponent_id,
+                        "player_name": player_name
                     }
     
     # Strategy 2: Frequency Analysis
@@ -248,11 +320,9 @@ def get_strategic_cpu_choice(opponent_name):
     predicted_choice = max(probabilities, key=probabilities.get)
     prediction_confidence = probabilities[predicted_choice]
     
-    # If there's a clear preference (> 40%), counter it
     if prediction_confidence > 0.4:
         optimal_counter = COUNTER_MOVES[predicted_choice]
         
-        # Add some randomness (15%) to stay unpredictable
         RANDOMNESS_FACTOR = 0.15
         
         if random.random() < RANDOMNESS_FACTOR:
@@ -266,26 +336,24 @@ def get_strategic_cpu_choice(opponent_name):
             "choice": final_choice,
             "strategy_used": strategy,
             "confidence": round(prediction_confidence * 100),
-            "analysis": f"Player favors {predicted_choice} ({prediction_confidence*100:.1f}%)",
+            "analysis": f"{player_name} favors {predicted_choice} ({prediction_confidence*100:.1f}%)",
             "player_tendencies": {
                 "rock": f"{probabilities['rock']*100:.1f}%",
                 "paper": f"{probabilities['paper']*100:.1f}%",
                 "scissors": f"{probabilities['scissors']*100:.1f}%"
             },
-            "total_choices_analyzed": total_choices
+            "total_choices_analyzed": total_choices,
+            "player_id": opponent_id,
+            "player_name": player_name
         }
     
     # Strategy 3: Weighted Random
-    # No clear pattern, but bias toward countering common moves
     weights = []
     for choice in choices:
-        # What does this choice beat?
         beats = RPS_RULES[choice]["beats"]
-        # Weight by how often opponent plays what this beats
         weight = 1 + (history.get(beats, 0) / max(total_choices, 1))
         weights.append(weight)
     
-    # Normalize and pick
     total_weight = sum(weights)
     weights = [w / total_weight for w in weights]
     final_choice = random.choices(choices, weights=weights, k=1)[0]
@@ -294,28 +362,39 @@ def get_strategic_cpu_choice(opponent_name):
         "choice": final_choice,
         "strategy_used": "weighted",
         "confidence": round(max(weights) * 100),
-        "analysis": "No strong pattern detected, using weighted random",
+        "analysis": f"No strong pattern for {player_name}, using weighted random",
         "player_tendencies": {
             "rock": f"{probabilities['rock']*100:.1f}%",
             "paper": f"{probabilities['paper']*100:.1f}%",
             "scissors": f"{probabilities['scissors']*100:.1f}%"
-        }
+        },
+        "player_id": opponent_id,
+        "player_name": player_name
     }
 
 
-def record_player_choice(player_name, choice):
+def record_player_choice(player_id, choice):
     """
-    Record a player's choice for AI learning.
+    Record a player's choice for AI learning using their unique ID.
+    
+    IMPORTANT: This function is ONLY called AFTER a round is complete.
+    The CPU makes its strategic choice BEFORE this is called, ensuring
+    the CPU cannot see the current round's choice - only historical data.
     
     Tracks:
     1. Frequency counts (choice_history)
     2. Move sequence (last N moves)
     3. Pattern history (what move follows each 2-move sequence)
-    """
-    if player_name not in LEADERBOARD or choice not in ["rock", "paper", "scissors"]:
-        return
     
-    player_data = LEADERBOARD[player_name]
+    Flow:
+    1. Player 1 picks -> Frontend stores locally (NOT sent to server yet)
+    2. CPU calls /api/cpu/strategic_choice -> Uses ONLY historical data
+    3. Both choices sent to /api/game/play_round -> THIS function records them
+    """
+    player_data = get_player_by_id(player_id)
+    
+    if not player_data or choice not in ["rock", "paper", "scissors"]:
+        return
     
     # Skip tracking for CPU
     if player_data.get("is_cpu", False):
@@ -356,6 +435,9 @@ def determine_round_winner(choice1, choice2):
         return "player2"
 
 
+# =============================================================================
+# API ROUTES
+# =============================================================================
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -363,6 +445,11 @@ def index():
 
 @app.route('/api/player/register', methods=['POST'])
 def register_player():
+    """
+    Register a new player with a unique ID.
+    Always creates a new player entry, even if name already exists.
+    This allows multiple players to have the same display name.
+    """
     data = request.get_json()
     player_name = data.get('name', '').strip()
     is_cpu = data.get('is_cpu', False)
@@ -370,82 +457,159 @@ def register_player():
     if not player_name:
         return jsonify({"error": "Player name is required"}), 400
     
-    if player_name not in LEADERBOARD:
-        LEADERBOARD[player_name] = {
-            "score": 0,
-            "games_won": 0,
-            "games_played": 0,
-            "is_cpu": is_cpu,
-            "choice_history": {"rock": 0, "paper": 0, "scissors": 0}
-        }
-        save_leaderboard()
+    # Handle CPU specially - use fixed ID
+    if is_cpu or player_name.upper() == "CPU":
         return jsonify({
-            "message": f"Player '{player_name}' registered successfully",
-            "player": {"name": player_name, "stats": LEADERBOARD[player_name]}
-        }), 201
-    else:
-        return jsonify({
-            "message": f"Player '{player_name}' already exists",
-            "player": {"name": player_name, "stats": LEADERBOARD[player_name]}
+            "message": "CPU player ready",
+            "player": {
+                "id": CPU_ID,
+                "name": "CPU",
+                "stats": LEADERBOARD[CPU_ID]
+            }
         }), 200
+    
+    # Generate unique ID for new player
+    player_id = generate_player_id()
+    
+    LEADERBOARD[player_id] = {
+        "id": player_id,
+        "name": player_name,
+        "score": 0,
+        "games_won": 0,
+        "games_played": 0,
+        "is_cpu": False,
+        "created_at": datetime.now().isoformat(),
+        "choice_history": {"rock": 0, "paper": 0, "scissors": 0},
+        "move_sequence": [],
+        "pattern_history": {}
+    }
+    
+    save_leaderboard()
+    
+    return jsonify({
+        "message": f"Player '{player_name}' registered successfully",
+        "player": {
+            "id": player_id,
+            "name": player_name,
+            "stats": LEADERBOARD[player_id]
+        }
+    }), 201
+
+
+@app.route('/api/player/<player_id>/stats', methods=['GET'])
+def get_player_stats(player_id):
+    """Get detailed statistics for a specific player by their unique ID."""
+    player = get_player_by_id(player_id)
+    
+    if not player:
+        return jsonify({"error": "Player not found"}), 404
+    
+    history = player.get("choice_history", {"rock": 0, "paper": 0, "scissors": 0})
+    total = sum(history.values())
+    
+    stats = {
+        "id": player_id,
+        "name": player["name"],
+        "score": player["score"],
+        "games_won": player["games_won"],
+        "games_played": player["games_played"],
+        "total_choices": total,
+        "choice_percentages": {
+            "rock": round(history["rock"] / total * 100, 1) if total > 0 else 0,
+            "paper": round(history["paper"] / total * 100, 1) if total > 0 else 0,
+            "scissors": round(history["scissors"] / total * 100, 1) if total > 0 else 0
+        }
+    }
+    
+    return jsonify(stats), 200
 
 
 @app.route('/api/game/start', methods=['POST'])
 def start_game():
+    """Start a new game between two players using their unique IDs."""
     global GAME_STATE
     data = request.get_json()
     
-    player1 = data.get('player1', '').strip()
-    player2 = data.get('player2', '').strip()
+    player1_id = data.get('player1_id', '').strip()
+    player2_id = data.get('player2_id', '').strip()
+    
+    if not player1_id or not player2_id:
+        return jsonify({"error": "Both player IDs are required"}), 400
+    
+    player1 = get_player_by_id(player1_id)
+    player2 = get_player_by_id(player2_id)
     
     if not player1 or not player2:
-        return jsonify({"error": "Both player names are required"}), 400
-    
-    if player1 not in LEADERBOARD or player2 not in LEADERBOARD:
         return jsonify({"error": "Both players must be registered first"}), 400
     
     GAME_STATE = {
-        "player1": player1,
-        "player2": player2,
+        "player1_id": player1_id,
+        "player2_id": player2_id,
+        "player1_name": player1["name"],
+        "player2_name": player2["name"],
         "player1_round_wins": 0,
         "player2_round_wins": 0,
         "current_round": 0,
         "game_active": True,
-        "previous_winner": GAME_STATE.get("previous_winner"),
+        "previous_winner_id": GAME_STATE.get("previous_winner_id"),
+        "previous_winner_name": GAME_STATE.get("previous_winner_name"),
         "game_history": []
     }
     
     save_leaderboard()
     
-    return jsonify({"message": "Game started", "game_state": GAME_STATE}), 200
+    return jsonify({
+        "message": "Game started",
+        "game_state": {
+            "player1": {"id": player1_id, "name": player1["name"]},
+            "player2": {"id": player2_id, "name": player2["name"]},
+            "current_round": 0,
+            "game_active": True
+        }
+    }), 200
 
 
 @app.route('/api/game/play_round', methods=['POST'])
 def play_round():
+    """
+    Play a round of the game.
+    
+    IMPORTANT - Data Flow for Fair Play:
+    1. Player picks choice -> stored in frontend only
+    2. CPU calls /api/cpu/strategic_choice -> analyzes PAST data only
+    3. CPU returns choice -> stored in frontend
+    4. Frontend calls THIS endpoint with BOTH choices
+    5. THIS function records choices -> NOW they become historical data
+    
+    This ensures CPU only ever sees completed round data, never current round.
+    """
     global GAME_STATE
     
     if not GAME_STATE["game_active"]:
-        return jsonify({"error": "No active game. Start a game first."}), 400
+        return jsonify({"error": "No active game"}), 400
+    
+    if GAME_STATE["current_round"] >= 10:
+        return jsonify({"error": "Game is over"}), 400
     
     data = request.get_json()
     choice1 = data.get('player1_choice', '').lower()
     choice2 = data.get('player2_choice', '').lower()
     
-    valid_choices = ["rock", "paper", "scissors"]
+    valid_choices = ['rock', 'paper', 'scissors']
     if choice1 not in valid_choices or choice2 not in valid_choices:
-        return jsonify({"error": "Invalid choice. Use rock, paper, or scissors."}), 400
+        return jsonify({"error": "Invalid choice"}), 400
     
-    player1_name = GAME_STATE["player1"]
-    player2_name = GAME_STATE["player2"]
+    player1_id = GAME_STATE["player1_id"]
+    player2_id = GAME_STATE["player2_id"]
     
-    if not LEADERBOARD.get(player1_name, {}).get("is_cpu", False):
-        record_player_choice(player1_name, choice1)
-    if not LEADERBOARD.get(player2_name, {}).get("is_cpu", False):
-        record_player_choice(player2_name, choice2)
-    
-    round_result = determine_round_winner(choice1, choice2)
+    # Record choices for AI learning AFTER both players have committed
+    # This is when choices become "historical" data for future CPU analysis
+    record_player_choice(player1_id, choice1)
+    record_player_choice(player2_id, choice2)
     
     GAME_STATE["current_round"] += 1
+    
+    round_result = determine_round_winner(choice1, choice2)
     
     round_data = {
         "round": GAME_STATE["current_round"],
@@ -456,33 +620,39 @@ def play_round():
     
     if round_result == "player1":
         GAME_STATE["player1_round_wins"] += 1
-        LEADERBOARD[player1_name]["score"] += 1
+        LEADERBOARD[player1_id]["score"] += 1
     elif round_result == "player2":
         GAME_STATE["player2_round_wins"] += 1
-        LEADERBOARD[player2_name]["score"] += 1
+        LEADERBOARD[player2_id]["score"] += 1
     
     GAME_STATE["game_history"].append(round_data)
     
     game_over = GAME_STATE["current_round"] >= 10
-    game_winner = None
+    game_winner_id = None
+    game_winner_name = None
     
     if game_over:
         GAME_STATE["game_active"] = False
         
         if GAME_STATE["player1_round_wins"] > GAME_STATE["player2_round_wins"]:
-            game_winner = player1_name
-            LEADERBOARD[player1_name]["games_won"] += 1
+            game_winner_id = player1_id
+            game_winner_name = GAME_STATE["player1_name"]
+            LEADERBOARD[player1_id]["games_won"] += 1
         elif GAME_STATE["player2_round_wins"] > GAME_STATE["player1_round_wins"]:
-            game_winner = player2_name
-            LEADERBOARD[player2_name]["games_won"] += 1
+            game_winner_id = player2_id
+            game_winner_name = GAME_STATE["player2_name"]
+            LEADERBOARD[player2_id]["games_won"] += 1
         
-        LEADERBOARD[player1_name]["games_played"] += 1
-        LEADERBOARD[player2_name]["games_played"] += 1
+        LEADERBOARD[player1_id]["games_played"] += 1
+        LEADERBOARD[player2_id]["games_played"] += 1
         
-        if game_winner and not LEADERBOARD.get(game_winner, {}).get("is_cpu", False):
-            GAME_STATE["previous_winner"] = game_winner
+        # Store winner for retention (skip CPU)
+        if game_winner_id and game_winner_id != CPU_ID:
+            GAME_STATE["previous_winner_id"] = game_winner_id
+            GAME_STATE["previous_winner_name"] = game_winner_name
         else:
-            GAME_STATE["previous_winner"] = None
+            GAME_STATE["previous_winner_id"] = None
+            GAME_STATE["previous_winner_name"] = None
     
     save_leaderboard()
     
@@ -495,104 +665,123 @@ def play_round():
             "game_active": GAME_STATE["game_active"]
         },
         "game_over": game_over,
-        "game_winner": game_winner
-    }), 200
-
-
-@app.route('/api/cpu/strategic_choice', methods=['POST'])
-def cpu_strategic_choice():
-    """Get a strategic choice from the CPU based on opponent's history."""
-    data = request.get_json()
-    opponent_name = data.get('opponent_name', '').strip()
-    
-    if not opponent_name:
-        return jsonify({"error": "Opponent name is required"}), 400
-    
-    result = get_strategic_cpu_choice(opponent_name)
-    
-    return jsonify(result), 200
-
-
-@app.route('/api/player/<name>/stats', methods=['GET'])
-def get_player_stats(name):
-    """Get detailed statistics for a specific player."""
-    if name not in LEADERBOARD:
-        return jsonify({"error": "Player not found"}), 404
-    
-    stats = LEADERBOARD[name].copy()
-    history = stats.get("choice_history", {"rock": 0, "paper": 0, "scissors": 0})
-    total = history["rock"] + history["paper"] + history["scissors"]
-    
-    if total > 0:
-        stats["choice_percentages"] = {
-            "rock": round(history["rock"] / total * 100, 1),
-            "paper": round(history["paper"] / total * 100, 1),
-            "scissors": round(history["scissors"] / total * 100, 1)
-        }
-    else:
-        stats["choice_percentages"] = {"rock": 0, "paper": 0, "scissors": 0}
-    
-    stats["total_choices"] = total
-    
-    return jsonify({"name": name, "stats": stats}), 200
-
-
-@app.route('/api/leaderboard', methods=['GET'])
-def get_leaderboard():
-    """Retrieves the complete leaderboard with two sorted views."""
-    players_list = [
-        {
-            "name": name,
-            "score": stats["score"],
-            "games_won": stats["games_won"],
-            "games_played": stats["games_played"],
-            "is_cpu": stats.get("is_cpu", False),
-            "choice_history": stats.get("choice_history", {"rock": 0, "paper": 0, "scissors": 0})
-        }
-        for name, stats in LEADERBOARD.items()
-    ]
-    
-    sorted_by_name = sorted(players_list, key=lambda x: x["name"].lower())
-    sorted_by_score = sorted(players_list, key=lambda x: (-x["score"], x["name"].lower()))
-    
-    return jsonify({
-        "by_name": sorted_by_name,
-        "by_score": sorted_by_score,
-        "total_players": len(players_list)
+        "game_winner": {
+            "id": game_winner_id,
+            "name": game_winner_name
+        } if game_winner_id else None
     }), 200
 
 
 @app.route('/api/game/state', methods=['GET'])
 def get_game_state():
+    """Get current game state."""
     return jsonify({
         "game_active": GAME_STATE["game_active"],
-        "player1": GAME_STATE["player1"],
-        "player2": GAME_STATE["player2"],
+        "player1": {
+            "id": GAME_STATE["player1_id"],
+            "name": GAME_STATE["player1_name"]
+        },
+        "player2": {
+            "id": GAME_STATE["player2_id"],
+            "name": GAME_STATE["player2_name"]
+        },
         "current_round": GAME_STATE["current_round"],
         "player1_round_wins": GAME_STATE["player1_round_wins"],
         "player2_round_wins": GAME_STATE["player2_round_wins"],
-        "previous_winner": GAME_STATE["previous_winner"],
+        "previous_winner": {
+            "id": GAME_STATE["previous_winner_id"],
+            "name": GAME_STATE["previous_winner_name"]
+        } if GAME_STATE["previous_winner_id"] else None,
         "game_history": GAME_STATE["game_history"]
+    }), 200
+
+
+@app.route('/api/cpu/strategic_choice', methods=['POST'])
+def cpu_strategic_choice():
+    """
+    Get a strategic choice from the CPU based on opponent's HISTORICAL data only.
+    
+    FAIR PLAY GUARANTEE:
+    - CPU can ONLY see data from COMPLETED rounds (choice_history, pattern_history)
+    - CPU CANNOT see the current round's choice (it hasn't been recorded yet)
+    - Player's current choice is stored in frontend only until round is submitted
+    - Data is only recorded via play_round() AFTER CPU has already chosen
+    
+    This ensures the CPU never "cheats" by seeing what the player picked this round.
+    """
+    data = request.get_json()
+    opponent_id = data.get('opponent_id', '').strip()
+    
+    if not opponent_id:
+        return jsonify({"error": "Opponent ID is required"}), 400
+    
+    result = get_strategic_cpu_choice(opponent_id)
+    
+    return jsonify(result), 200
+
+
+@app.route('/api/leaderboard', methods=['GET'])
+def get_leaderboard():
+    """
+    Retrieves the complete leaderboard with two sorted views.
+    Includes unique IDs for each player.
+    """
+    # Convert Dictionary to List of Dictionaries
+    players_list = [
+        {
+            "id": player_id,
+            "name": stats["name"],
+            "score": stats["score"],
+            "games_won": stats["games_won"],
+            "games_played": stats["games_played"],
+            "is_cpu": stats.get("is_cpu", False),
+            "total_rounds": sum(stats.get("choice_history", {}).values())
+        }
+        for player_id, stats in LEADERBOARD.items()
+    ]
+    
+    # Sorting Algorithm 1: Alphabetically by name (case-insensitive)
+    sorted_by_name = sorted(players_list, key=lambda x: x["name"].lower())
+    
+    # Sorting Algorithm 2: Numerically by score (descending)
+    sorted_by_score = sorted(players_list, key=lambda x: (-x["score"], x["name"].lower()))
+    
+    return jsonify({
+        "total_players": len(players_list),
+        "sorted_by_name": sorted_by_name,
+        "sorted_by_score": sorted_by_score
     }), 200
 
 
 @app.route('/api/reset', methods=['POST'])
 def reset_tournament():
+    """Reset all tournament data."""
     global LEADERBOARD, GAME_STATE
+    
     LEADERBOARD = {}
+    init_cpu_player()
+    
     GAME_STATE = {
-        "player1": None,
-        "player2": None,
+        "player1_id": None,
+        "player2_id": None,
+        "player1_name": None,
+        "player2_name": None,
         "player1_round_wins": 0,
         "player2_round_wins": 0,
         "current_round": 0,
         "game_active": False,
-        "previous_winner": None,
+        "previous_winner_id": None,
+        "previous_winner_name": None,
         "game_history": []
     }
+    
     save_leaderboard()
+    
     return jsonify({"message": "Tournament reset successfully"}), 200
 
 
+# =============================================================================
+# Run the Flask application
+# =============================================================================
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
