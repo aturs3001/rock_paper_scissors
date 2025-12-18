@@ -144,6 +144,15 @@
             cursor: not-allowed;
         }
 
+        .winner-retention-msg {
+            color: #28a745;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .btn {
             padding: 12px 24px;
             border-radius: 8px;
@@ -518,7 +527,16 @@
 
                     <div class="input-group">
                         <label for="player1-name">Player 1 Name:</label>
-                        <input type="text" id="player1-name" placeholder="Enter name">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="player1-name" placeholder="Enter name" style="flex: 1;">
+                            <button class="btn btn-secondary hidden" id="unlock-p1-btn" onclick="unlockPlayer1()"
+                                style="padding: 12px 16px; white-space: nowrap;">
+                                🔓 Change Player
+                            </button>
+                        </div>
+                        <div id="winner-retention-msg" class="winner-retention-msg hidden">
+                            🏆 Winner from last game - continuing tournament
+                        </div>
                     </div>
 
                     <div class="input-group" id="player2-input-group">
@@ -697,12 +715,27 @@
         const confirmChoiceBtn = document.getElementById('confirm-choice-btn');
         const turnIndicator = document.getElementById('turn-indicator');
         const p1Locked = document.getElementById('p1-locked');
+        const unlockP1Btn = document.getElementById('unlock-p1-btn');
+        const winnerRetentionMsg = document.getElementById('winner-retention-msg');
 
         // =============================================================================
         // Event Listeners
         // =============================================================================
         player1Input.addEventListener('input', validateInputs);
         player2Input.addEventListener('input', validateInputs);
+
+        // =============================================================================
+        // Winner Retention Override
+        // =============================================================================
+        function unlockPlayer1() {
+            player1Input.disabled = false;
+            player1Input.value = '';
+            player1Id = null;
+            unlockP1Btn.classList.add('hidden');
+            winnerRetentionMsg.classList.add('hidden');
+            player1Input.focus();
+            validateInputs();
+        }
 
         // =============================================================================
         // Game Mode Toggle
@@ -821,15 +854,19 @@
             player2Name = gameMode === 'pvc' ? 'CPU' : player2Input.value.trim();
 
             try {
-                // Register Player 1 and get their unique ID
-                const p1Response = await fetch('/api/player/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: player1Name })
-                });
-                const p1Data = await p1Response.json();
-                player1Id = p1Data.player.id;
-                console.log(`Player 1 registered: ${player1Name} (ID: ${player1Id})`);
+                // Register Player 1 (or use existing if retained winner)
+                if (!player1Id) {
+                    const p1Response = await fetch('/api/player/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: player1Name })
+                    });
+                    const p1Data = await p1Response.json();
+                    player1Id = p1Data.player.id;
+                    console.log(`Player 1 registered: ${player1Name} (ID: ${player1Id})`);
+                } else {
+                    console.log(`Player 1 retained: ${player1Name} (ID: ${player1Id})`);
+                }
 
                 // Register Player 2 and get their unique ID
                 const p2Response = await fetch('/api/player/register', {
@@ -1015,10 +1052,14 @@
                 player1Input.value = gameState.previous_winner.name;
                 player1Id = gameState.previous_winner.id;
                 player1Input.disabled = true;
+                unlockP1Btn.classList.remove('hidden');
+                winnerRetentionMsg.classList.remove('hidden');
             } else {
                 player1Input.value = '';
                 player1Input.disabled = false;
                 player1Id = null;
+                unlockP1Btn.classList.add('hidden');
+                winnerRetentionMsg.classList.add('hidden');
             }
 
             player2Input.value = '';
@@ -1048,6 +1089,8 @@
             player1Input.value = '';
             player1Input.disabled = false;
             player2Input.value = '';
+            unlockP1Btn.classList.add('hidden');
+            winnerRetentionMsg.classList.add('hidden');
 
             player1Id = null;
             player2Id = null;
