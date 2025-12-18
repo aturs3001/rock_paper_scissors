@@ -48,9 +48,6 @@ A Flask-based web application for managing a persistent, multi-player Rock-Paper
 - 📈 **O(1) Lookups**: Efficient dictionary-based player data access
 - 🔧 **Easy Deployment**: Simple Flask application with minimal dependencies
 
-## 🎥 Demo
-
-**Demo Video**: [Watch on YouTube](#) _(Add your video link here)_
 
 ### Screenshots
 
