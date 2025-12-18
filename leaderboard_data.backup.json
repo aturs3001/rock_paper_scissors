@@ -1,13 +1,13 @@
 {
   "version": "2.0",
-  "last_updated": "2025-12-16T20:12:11.314821",
+  "last_updated": "2025-12-18T11:28:11.075424",
   "leaderboard": {
     "cpu-00000000-0000-0000-0000-000000000000": {
       "id": "cpu-00000000-0000-0000-0000-000000000000",
       "name": "CPU",
-      "score": 6,
-      "games_won": 1,
-      "games_played": 1,
+      "score": 13,
+      "games_won": 2,
+      "games_played": 3,
       "is_cpu": true,
       "created_at": "2025-12-16T19:50:35.265165",
       "choice_history": {
@@ -89,7 +89,417 @@
       },
       "move_sequence": [],
       "pattern_history": {}
+    },
+    "55a69f20-c3cb-4727-b32f-b05178506a7d": {
+      "id": "55a69f20-c3cb-4727-b32f-b05178506a7d",
+      "name": "Aric",
+      "score": 0,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:02:36.761983",
+      "choice_history": {
+        "rock": 1,
+        "paper": 1,
+        "scissors": 0
+      },
+      "move_sequence": [
+        "paper",
+        "rock"
+      ],
+      "pattern_history": {}
+    },
+    "b8672bbb-b5cd-405e-a4a7-7e647d4e010e": {
+      "id": "b8672bbb-b5cd-405e-a4a7-7e647d4e010e",
+      "name": "Tim",
+      "score": 2,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:02:37.009962",
+      "choice_history": {
+        "rock": 0,
+        "paper": 1,
+        "scissors": 1
+      },
+      "move_sequence": [
+        "scissors",
+        "paper"
+      ],
+      "pattern_history": {}
+    },
+    "f27b0d79-a22a-454a-a3d7-a99cd4bd2079": {
+      "id": "f27b0d79-a22a-454a-a3d7-a99cd4bd2079",
+      "name": "Aric",
+      "score": 4,
+      "games_won": 0,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:07:46.462282",
+      "choice_history": {
+        "rock": 3,
+        "paper": 4,
+        "scissors": 3
+      },
+      "move_sequence": [
+        "scissors",
+        "rock",
+        "paper",
+        "paper",
+        "paper",
+        "rock",
+        "scissors",
+        "scissors",
+        "rock",
+        "paper"
+      ],
+      "pattern_history": {
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 2,
+          "scissors": 0
+        },
+        "('rock', 'paper')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'paper')": {
+          "rock": 1,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('scissors', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        }
+      }
+    },
+    "9a6fa595-f819-4736-9574-928ab62d4f98": {
+      "id": "9a6fa595-f819-4736-9574-928ab62d4f98",
+      "name": "Tim",
+      "score": 6,
+      "games_won": 1,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:07:46.713180",
+      "choice_history": {
+        "rock": 4,
+        "paper": 3,
+        "scissors": 3
+      },
+      "move_sequence": [
+        "paper",
+        "paper",
+        "scissors",
+        "rock",
+        "scissors",
+        "paper",
+        "rock",
+        "rock",
+        "scissors",
+        "rock"
+      ],
+      "pattern_history": {
+        "('paper', 'paper')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('paper', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 1,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('scissors', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('rock', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        }
+      }
+    },
+    "9f4b961c-37ad-489d-9878-8afd0834c06b": {
+      "id": "9f4b961c-37ad-489d-9878-8afd0834c06b",
+      "name": "Tim",
+      "score": 3,
+      "games_won": 0,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:09:22.664276",
+      "choice_history": {
+        "rock": 3,
+        "paper": 4,
+        "scissors": 3
+      },
+      "move_sequence": [
+        "paper",
+        "rock",
+        "scissors",
+        "paper",
+        "paper",
+        "scissors",
+        "scissors",
+        "rock",
+        "paper",
+        "rock"
+      ],
+      "pattern_history": {
+        "('paper', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('scissors', 'paper')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'paper')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('paper', 'scissors')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('scissors', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('rock', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        }
+      }
+    },
+    "918356c4-206b-4431-a12c-15c1fc8f65ac": {
+      "id": "918356c4-206b-4431-a12c-15c1fc8f65ac",
+      "name": "Aric",
+      "score": 6,
+      "games_won": 1,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:12:06.892311",
+      "choice_history": {
+        "rock": 4,
+        "paper": 4,
+        "scissors": 2
+      },
+      "move_sequence": [
+        "rock",
+        "paper",
+        "paper",
+        "rock",
+        "rock",
+        "scissors",
+        "scissors",
+        "rock",
+        "paper",
+        "paper"
+      ],
+      "pattern_history": {
+        "('rock', 'paper')": {
+          "rock": 0,
+          "paper": 2,
+          "scissors": 0
+        },
+        "('paper', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('paper', 'rock')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('rock', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('scissors', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        }
+      }
+    },
+    "751a9aaa-56d7-43ea-a457-36a09809ccf6": {
+      "id": "751a9aaa-56d7-43ea-a457-36a09809ccf6",
+      "name": "Aric",
+      "score": 5,
+      "games_won": 1,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:26:42.377063",
+      "choice_history": {
+        "rock": 6,
+        "paper": 4,
+        "scissors": 0
+      },
+      "move_sequence": [
+        "paper",
+        "rock",
+        "rock",
+        "rock",
+        "paper",
+        "rock",
+        "rock",
+        "paper",
+        "rock",
+        "paper"
+      ],
+      "pattern_history": {
+        "('paper', 'rock')": {
+          "rock": 2,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('rock', 'rock')": {
+          "rock": 1,
+          "paper": 2,
+          "scissors": 0
+        },
+        "('rock', 'paper')": {
+          "rock": 2,
+          "paper": 0,
+          "scissors": 0
+        }
+      }
+    },
+    "14145760-49f0-4d96-b8af-1d01d1e7a5c1": {
+      "id": "14145760-49f0-4d96-b8af-1d01d1e7a5c1",
+      "name": "Tim",
+      "score": 4,
+      "games_won": 0,
+      "games_played": 1,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:26:42.628141",
+      "choice_history": {
+        "rock": 3,
+        "paper": 2,
+        "scissors": 5
+      },
+      "move_sequence": [
+        "scissors",
+        "scissors",
+        "paper",
+        "rock",
+        "scissors",
+        "paper",
+        "scissors",
+        "rock",
+        "scissors",
+        "rock"
+      ],
+      "pattern_history": {
+        "('scissors', 'scissors')": {
+          "rock": 0,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('scissors', 'paper')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('paper', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        },
+        "('rock', 'scissors')": {
+          "rock": 1,
+          "paper": 1,
+          "scissors": 0
+        },
+        "('paper', 'scissors')": {
+          "rock": 1,
+          "paper": 0,
+          "scissors": 0
+        },
+        "('scissors', 'rock')": {
+          "rock": 0,
+          "paper": 0,
+          "scissors": 1
+        }
+      }
+    },
+    "e0ef1fb2-acfb-4a7f-9e18-6ad389bb9c26": {
+      "id": "e0ef1fb2-acfb-4a7f-9e18-6ad389bb9c26",
+      "name": "Aric",
+      "score": 0,
+      "games_won": 0,
+      "games_played": 0,
+      "is_cpu": false,
+      "created_at": "2025-12-18T11:27:58.962700",
+      "choice_history": {
+        "rock": 1,
+        "paper": 1,
+        "scissors": 0
+      },
+      "move_sequence": [
+        "rock",
+        "paper"
+      ],
+      "pattern_history": {}
     }
   },
-  "checksum": "17918e78aaae38be5626ea2c1f904799d82c1ce6d9c8e887b788b9e41456ceb1"
+  "checksum": "38e1feaf9a53c857ddb81fa45d192cfa6bf6409ef03f0a7ee5d123fa3a52f629"
 }
